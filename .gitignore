@@ -1,0 +1,6 @@
+node_modules
+.sass-cache
+.history
+.vscode-upload.js
+xr/libraries
+_old_xr

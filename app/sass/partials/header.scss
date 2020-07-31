@@ -1,0 +1,70 @@
+header {
+    height: 0;
+    background-color: rgba(200, 0, 0, 0.2);
+    position: absolute;
+    width: 100%;
+    height: 25px;
+    transition: transform 1s;
+    #logo {
+        width: 400px;
+        z-index: 2;
+        position: absolute;
+        top: 25px;
+        left: 50%;
+        margin-left: -200px;
+    }
+    #laurel {
+        // tagline
+        color: #fff;
+        position: relative;
+        text-align: center;
+        width: 96%;
+        padding: 2%;
+        display: inline-block;
+        font-size: 70%;
+    }
+}
+
+header.horizontal {
+    // background-color:rgba(0,200,0,0.2);
+    transform: rotate(0deg);
+    transform: scale(100vh);
+    #laurel {}
+    #logo {}
+}
+
+header.horizontal.maxed #logo {
+    background-color: rgba(0, 0, 200, 0.3);
+    transform: translatex(25vw);
+    width: 38%;
+}
+
+header.horizontal.maxed #laurel {
+    transform: translatex(50vw);
+    font-size: 2.38vh;
+    width: 50%;
+}
+
+header.vertical {
+    //background-color:rgba(0,200,0,0.1);
+    transform: rotate(0deg);
+    transform: scale(100vw);
+    #laurel {}
+    #logo {
+        @media(max-width: 539px) {
+            position: absolute;
+            width: 38.2vw;
+            height: 38.2vw;
+            left: 5px;
+            top: 25px;
+        }
+    }
+}
+
+header.vertical.maxed #logo {
+    background-color: rgba(0, 0, 200, 0.3);
+}
+
+header.vertical.maxed #laurel {
+    font-size: 2.38vw;
+}

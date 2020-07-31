@@ -1,0 +1,22 @@
+#admin {
+    max-width: 90%;
+    font-size: .7em;
+    margin: 0px auto;
+    background-color: white;
+    overflow: scroll;
+    table {
+        border: 1px solid #000;
+        tr.evenrow {
+            background-color: #ccc;
+        }
+        td {
+            a {
+                color: #009;
+                text-decoration: none;
+            }
+            table tr td {
+                border: 3px double #999;
+            }
+        }
+    }
+}

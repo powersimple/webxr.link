@@ -1,0 +1,175 @@
+body {
+    background-color: #000 !important;
+    color: #000;
+    font-family: 'Cabin', sans-serif;
+    /// background: url(images/bg/measure.jpg) center top #ccc !important;
+}
+
+html,
+body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0px;
+    padding: 0px;
+    overflow: scroll-y;
+    line-height: 120%;
+    font-size: 1em;
+    @media(max-width: 539px) {
+        font-size: 0.7em;
+    }
+    @media(min-width:540px) and (max-width:767px) {
+        font-size: 0.8em;
+    }
+    @media(min-width:768px) and (max-width:1025px) {
+        font-size: 0.8em;
+    }
+    @media(min-width:1281px) {
+        font-size: 1.2em;
+    }
+}
+
+a {
+    color: #fff200;
+}
+
+a:hover {
+    color: #0f0;
+}
+
+#stars {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    z-index: -1;
+}
+
+#masthead,
+#colophon {
+    font-family: 'Rubik', sans-serif;
+}
+
+#preload {
+    display: none;
+}
+
+#main {
+    min-width: 320px;
+    min-height: 320px;
+    position: relative;
+    //  background-color: rgba(0, 0, 0, 1)
+}
+
+.panel-body {
+    text-align: center;
+    margin: 0px auto;
+}
+
+#circle-mask {
+    // display: none;//THIS HAD BORDERS, better to use border-radius on the video
+    svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+    }
+    svg mask rect {
+        fill: rgba(255, 255, 255, 1);
+    }
+    svg mask circle {
+        overflow: hidden;
+    }
+    svg>rect {
+        fill: black;
+        -webkit-mask: url(#mask);
+        mask: url(#mask);
+    }
+    #bg-video {
+        display: none;
+    }
+    video {
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 1px;
+        z-index: -1;
+        overflow: hidden;
+        height: 99%;
+        opacity: 0.9;
+    }
+}
+
+#screen.horizontal {
+    #bg-video video {
+        height: 61vh;
+        left: 50%;
+        top: 50%;
+        margin-left: -30.5vh;
+        margin-top: -30.5vh;
+    }
+    #screen-image-wrap {
+        width: 58vh;
+        height: 58vh;
+        left: 50%;
+        top: 50%;
+        margin-left: -29vh;
+        margin-top: -29vh;
+    }
+}
+
+#screen.vertical {
+    #bg-video video {
+        height: 61vw;
+        left: 50%;
+        top: 50%;
+        margin-left: -30.5vw;
+        margin-top: -30.5vw;
+    }
+    #screen-image-wrap {
+        width: 58vw;
+        height: 58vw;
+        left: 50%;
+        top: 50%;
+        margin-left: -29vw;
+        margin-top: -29vw;
+    }
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* 16:9 */
+    padding-top: 25px;
+    height: 0;
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .video-phi-narrow {
+        width: 38%;
+    }
+    .left {
+        left: 0;
+    }
+}
+
+#project-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    // border:1px solid #990000;
+    width: 60vh;
+    height: 60vh;
+    margin-left: -30vh;
+    margin-top: -30vh;
+    z-index: 3000;
+    display: none;
+    div {
+        color: #fff;
+        text-align: center;
+    }
+}

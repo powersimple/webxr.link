@@ -1,0 +1,60 @@
+/*
+Theme Name: WEBXR.LINK
+Author: Ben Erwin, Powersimple, LLC
+Author URI: https://Powersimple/
+Description: 
+Text Domain: powersimple
+
+DO NOT EDIT IN STYLE.CSS
+*/
+
+
+/*
+    PUT YOUR COLOR PALETTE HERE:
+*/
+
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,600,700|Krona+One');
+@import "partials/reset";
+@import "partials/colors";
+@import "partials/guide";
+@import "partials/loader";
+@import "partials/header";
+@import "partials/nav";
+@import "partials/footer";
+@import "partials/admin";
+@import "partials/main";
+@import "partials/images";
+@import "partials/media";
+@import "partials/related";
+@import "partials/globe";
+@import "partials/portfolio";
+@import "partials/crawl";
+@import "partials/ripple";
+@import "partials/wheelnav";
+@import "partials/screen";
+@import "partials/social";
+@import "partials/slider";
+@import "partials/slick";
+@import "partials/laser";
+@import "partials/tag-cloud";
+@import "partials/webgl";
+@import "partials/scraper";
+@import "partials/mindmap";
+//languages
+@import "partials/wpml-languages";
+#matrix {
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+    max-width: 100%;
+    height: 100vh;
+    width: 100vw;
+    opacity: 0.3;
+}
+
+#hiddenCanvas {
+    display: none;
+}
+
+body {
+    //    background: url(images/bg/measure.jpg) top center #ccc !important;
+}

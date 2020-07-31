@@ -1,0 +1,14 @@
+{
+    "packages": [
+        "xr/*"
+    ],
+    "version": "0.30.1",
+    "command": {
+        "version": {
+            "conventionalCommits": true
+        },
+        "publish": {
+            "allowBranch": "master"
+        }
+    }
+}

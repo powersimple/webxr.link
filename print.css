@@ -1,0 +1,62 @@
+@page {
+    size: 8.5in 11in;
+    margin: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 1.6cm;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+@page: first {
+    size: 8.5in 11in;
+    margin: 0in;
+}
+
+#print-footer {
+    width: 7.06cm;
+    height: 0.71cm;
+    margin: 0px auto;
+    display: block;
+    position: absolute;
+    bottom: 2cm;
+    left: 50%;
+    margin-left: -3.5cm;
+}
+
+.two_columns_sans_header {
+    max-height: 18cm;
+    column-width: 6cm;
+    column-gap: 2cm;
+    font-family: 'Freight Sans Book';
+    position: absolute;
+    left: 50%;
+    width: 19cm;
+    margin-left: -8cm;
+    margin-top: 2cm;
+    overflow: hidden;
+}
+
+p {
+    margin-bottom: 13.2pt;
+    line-height: 13.2pt;
+    text-align: justify;
+    font-size: 13pt;
+}
+
+@font-face {
+    font-family: "Freight Sans Book";
+    src: url("fonts/FreightSansBook.otf") format("opentype");
+}
