@@ -1,19 +1,14 @@
-**FALKOR**
+#Code Named: KitchenSink this theme runs WebXR.link
+#This is a Wordpress theme in Chrysalis evolving into a WebXR enabled site with 
+## build on a NojeJS stack
+### Uses Gulp to build SASS and JS on Save by running gulp
 
-Yes, this is named after the Luck Dragon from The Never Ending Story, because this repo needed not just a name, but a mascot.
-And a kindly flying dog seemed appropriate. Soon after this repo was created, by kismet, I ran into Falkor in AltSpaceVR.
+You can clone this into your /wp-content/themes folder
+NPM INSTALL - it will install an audacious number of node modules, fuck it. read the package.json
 
-![Image of Falkor](https://github.com/powersimple/falkor/blob/master/images/logo/falkor.jpg)
+Go into app/sass/styles.scss and edit the header to make this theme you're own.
 
-##Falkor is many things. 
-First, it's a Wordpress theme.
-It also has a node-gulp-sass for bundling SCSS and JS
-It uses the Wordpress Rest API and renders static json packets
-These are all quaint and useful in a 2D content World
+Edit your javascripts in app/custom
 
-But now we're in the webXR world. and it's time to build for it.
-So this repo will be integrating the best of WebXR into it for immersive experiences on supporting browsers.
-
-If you have Oculus Quest or a device with the Mozilla Reality Browser, you'll need that to full take advantage of immersive WebXR. 
-
-A work in progress.
+This is an as-is work-in-progress
+You're welcome to help yourself to the code, feel free to contact me with questions. Ben Erwin
