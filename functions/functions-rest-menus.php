@@ -150,7 +150,7 @@ if ( ! class_exists( 'WP_REST_Menus' ) ) :
                             "menu_order"=>$value->menu_order,
                             "title"=>$value->title,
                             "url"=>$url,
-                            "slug"=>$value->post_name,
+                            "slug"=>sanitize_title($value->title),
                             "post_parent" => $value->post_parent,
                             "classes" => implode(" ",$value->classes),       
                             "description" => $value->description,

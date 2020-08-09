@@ -23,15 +23,31 @@
 
 }
 
-#screen{
+#screen, #screen.horizontal{
     transition: transform 1s;
     border:0px solid #0f0;
     position: absolute;
     width:100vw;
     height:100vh;
+        transition: transform 1s;
+    border: 0px solid #0f0;
+    position: absolute;
+    width: 50vh;
+    height: 50vh;
+    top: 75px;
+    
+    left:5vw;
     
 }
-
+#screen.vertical{
+    left: 50%;
+    width:50vw;
+    height:50vw;
+    
+    margin-left: -25%;
+    top: 10%;
+    margin-top:0px;
+}
 #screen.horizontal.maxed{
 
     

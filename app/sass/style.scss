@@ -13,7 +13,7 @@ DO NOT EDIT IN STYLE.CSS
     PUT YOUR COLOR PALETTE HERE:
 */
 
-@import url('https://fonts.googleapis.com/css?family=Cabin:400,600,700|Krona+One');
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,600,700|Audiowide');
 @import "partials/reset";
 @import "partials/colors";
 @import "partials/guide";
@@ -57,4 +57,14 @@ DO NOT EDIT IN STYLE.CSS
 
 body {
     //    background: url(images/bg/measure.jpg) top center #ccc !important;
+    
+}
+body {
+    background-color:  #000644 !important;
+ 
+    color:#fff;
+
+    font-family: 'Cabin', sans-serif;
+    /// background: url(images/bg/measure.jpg) center top #ccc !important;
+    
 }

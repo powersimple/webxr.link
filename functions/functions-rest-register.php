@@ -63,6 +63,48 @@ function get_post_media( $object ) {
 }
 
 
+/* 
+	media
+*/
+
+add_action( 'rest_api_init', 'register_related_posts' );
+ function register_related_posts() {
+ 
+
+	register_rest_field( ['post','page','profile','resource','hardware'], 'related', array(
+		'get_callback' => 'get_related_posts'
+
+		)
+	);
+}
+
+function get_related_posts( $object ) { 
+	$related_profiles = get_post_meta($object['id'],'related-profile');
+	$related_resources = get_post_meta($object['id'],'related-resource');
+	
+/*
+	$postmeta_media_fields = "hero,_thumbnail_id,featured_video,screen_image,screenshot,logo";
+
+	
+	foreach(explode(",",$postmeta_media_fields) as $key  => $field){
+		$media_id = get_post_meta($object['id'],$field,false);// returns Array, not string!!
+		$post_media_data = array();
+		foreach($media_id as $key => $value){
+			array_push($post_media_data,get_media_data_by_id($value));
+			
+		}
+
+		$post_media_urls[$field] = $post_media_data;
+	
+	}
+*/
+	return array_merge($related_resources,
+				$related_profiles);
+
+
+}
+
+
 
 
 

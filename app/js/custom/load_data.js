@@ -10,6 +10,7 @@ var posts = {},
   hardware = {},
   taxonomies = {},
   categories = {},
+  category_ids = {},//stored by id on in texonomies
   tags = {},
   menus = {},
   media = {},
@@ -25,7 +26,8 @@ var posts = {},
   social = {},
   data_loaded = false,
   profile_posts = {},
-  hardware_posts = {};
+  hardware_posts = {},
+  resource_posts={};
 
 state.featured = {
   transition: {
@@ -87,11 +89,11 @@ if (data_loaded == false) {
 
 function setData(data) {
   //sets all content arrays
-  // console.log("setData", data)
+  console.log("setData", data)
   posts = setPosts(data.posts);
   pages = setPosts(data.pages);
   profiles = setPosts(data.profile);
-
+  resources = setPosts(data.resource);
   //  console.log("profiles",profiles)
   for (p in posts) {
     if (profiles[p].type == 'profile') {
@@ -100,7 +102,9 @@ function setData(data) {
       profiles_array.push(profiles[p]);
     } else if (profiles[p].type == 'hardware') {
       hardware_posts[profiles[p].id] = profiles[p];
-    }
+    }  else if (profiles[p].type == 'resource') {
+      resource_posts[profiles[p].id] = profiles[p];
+  }
   }
   profiles_array = sort_array('title', profiles_array);
   hardware = data.hardware;
@@ -112,7 +116,7 @@ function setData(data) {
   //console.log("HARDWARE", hardware_posts)
   //  setPosts(data.social)
   setCategories(data.categories);
-
+  
   var taxonomies = 'industry,feature,collaboration_type,platform';
   var taxes = taxonomies.split(',');
   for (var t = 0; t < taxes.length; t++) {

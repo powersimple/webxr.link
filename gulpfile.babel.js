@@ -182,8 +182,8 @@ function browser() {
   watch('./app/js/vendor/**/*.js', vendor).on('change', browserSync.reload);
 
   //until I put this in webpack.
-  watch('./xr/css/**/*.scss', xr_clean);
-  watch('./xr/css/**/*.scss', xr_css).on('change', browserSync.reload);
+  //watch('./xr/css/**/*.scss', xr_clean);
+//  watch('./xr/css/**/*.scss', xr_css).on('change', browserSync.reload);
   //watch('./xr/js/lib/**/*.js', xr_lib).on('change', browserSync.reload);
   //watch('./xr/js/app/**/*.js', xr_app).on('change', browserSync.reload);
 }

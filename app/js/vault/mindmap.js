@@ -1,7 +1,7 @@
 /*
+ js-mindmap
 
-Derived from js-mindmap, with kind thanks to.
-Copyright (c) 2008/09/10 Kenneth Kufluk http://kenneth.kufluk.com/
+ Copyright (c) 2008/09/10 Kenneth Kufluk http://kenneth.kufluk.com/
 
  MIT (X11) license
 
@@ -25,532 +25,848 @@ Copyright (c) 2008/09/10 Kenneth Kufluk http://kenneth.kufluk.com/
 
 */
 
+/*
+  Things to do:
+    - remove Lines - NO - they seem harmless enough!
+    - add better "make active" methods
+    - remove the "root node" concept.  Tie nodes to elements better, so we can check if a parent element is root
+
+    - allow progressive exploration
+      - allow easy supplying of an ajax param for loading new kids and a loader anim
+    - allow easy exploration of a ul or ol to find nodes
+    - limit to an area
+    - allow more content (div instead of an a)
+    - test multiple canvases
+    - Hidden children should not be bounded
+    - Layout children in circles
+    - Add/Edit nodes
+    - Resize event
+    - incorporate widths into the forces, so left boundaries push on right boundaries
 
 
-;(function ($) {
-  'use strict'
+  Make demos:
+    - amazon explore
+    - directgov explore
+    - thesaurus
+    - themes
 
+*/
+var initMindMap = false;
+
+(function(jQuery) {
+  'use strict';
+var mindmap_width = jQuery('#mindmap').width(),
+mindmap_height = jQuery('#mindmap').height()
   var TIMEOUT = 4, // movement timeout in seconds
     CENTRE_FORCE = 3, // strength of attraction to the centre by the active node
     Node,
-    Line
+    Line;
 
   // Define all Node related functions.
-  Node = function (obj, name, parent, opts) {
-    this.obj = obj
-    this.options = obj.options
+  Node = function(obj, name, parent, opts) {
+    this.obj = obj;
+    this.options = obj.options;
 
-    this.name = name
-    this.href = opts.href
+    this.name = name;
+    this.href = opts.href;
     if (opts.url) {
-      this.url = opts.url
+      this.url = opts.url;
     }
+    if (opts.color) {
+      this.color = opts.color;
+    }
+    if (opts.size) {
+      this.size = 'size' + opts.size;
+    }
+    // else { this.size = "100px"; }
 
     // create the element for display
-    this.el = $('<a href="' + this.href + '">' + this.name + '</a>').addClass('node')
-    $('body').prepend(this.el)
+    // this.el = jQuery('<a href="' + this.href + '" style="width: ' + this.size + '; height: ' + this.size + ';"><div><span>' + this.name + '</span></div></a>').addClass('node').addClass(this.color);
+    this.el = jQuery(
+      '<a href="' +
+        this.href +
+        '"><div><span>' +
+        this.name +
+        '</span></div></a>'
+    )
+      .addClass('node')
+      .addClass(this.color)
+      .addClass(this.size);
+      console.log(this.el)
+    jQuery('#mindmap').prepend(this.el);
 
     if (!parent) {
-      obj.activeNode = this
-      this.el.addClass('active root')
+      obj.activeNode = this;
+      this.el.addClass('active root');
     } else {
-      obj.lines[obj.lines.length] = new Line(obj, this, parent)
+      obj.lines[obj.lines.length] = new Line(obj, this, parent);
     }
-    this.parent = parent
-    this.children = []
+    this.parent = parent;
+    this.children = [];
     if (this.parent) {
-      this.parent.children.push(this)
+      this.parent.children.push(this);
     }
 
     // animation handling
-    this.moving = false
-    this.moveTimer = 0
-    this.obj.movementStopped = false
-    this.visible = true
-    this.x = 1
-    this.y = 1
-    this.dx = 0
-    this.dy = 0
-    this.hasPosition = false
+    this.moving = false;
+    this.moveTimer = 0;
+    this.obj.movementStopped = false;
+    this.visible = true;
+    this.x = 1;
+    this.y = 1;
+    this.dx = 0;
+    this.dy = 0;
+    this.hasPosition = false;
 
-    this.content = [] // array of content elements to display onclick
+    this.content = []; // array of content elements to display onclick;
 
-    this.el.css('position', 'absolute')
+    this.el.css('position', 'absolute');
 
-    var thisnode = this
+    var thisnode = this;
 
     this.el.draggable({
-      drag: function () {
-        obj.root.animateToStatic()
-      }
-    })
+      drag: function() {
+        obj.root.animateToStatic();
+      },
+    });
 
-    this.el.click(function () {
+    this.el.click(function() {
       if (obj.activeNode) {
-        obj.activeNode.el.removeClass('active')
+        obj.activeNode.el.removeClass('active');
         if (obj.activeNode.parent) {
-          obj.activeNode.parent.el.removeClass('activeparent')
+          obj.activeNode.parent.el.removeClass('activeparent');
         }
       }
       if (typeof opts.onclick === 'function') {
-        opts.onclick(thisnode)
+        opts.onclick(thisnode);
       }
-      obj.activeNode = thisnode
-      obj.activeNode.el.addClass('active')
+      obj.activeNode = thisnode;
+      obj.activeNode.el.addClass('active');
       if (obj.activeNode.parent) {
-        obj.activeNode.parent.el.addClass('activeparent')
+        obj.activeNode.parent.el.addClass('activeparent');
       }
-      obj.root.animateToStatic()
-      return false
-    })
-  }
+      obj.root.animateToStatic();
+      return false;
+    });
+  };
 
   // ROOT NODE ONLY:  control animation loop
-  Node.prototype.animateToStatic = function () {
-    clearTimeout(this.moveTimer)
+  Node.prototype.animateToStatic = function() {
+    clearTimeout(this.moveTimer);
     // stop the movement after a certain time
-    var thisnode = this
-    this.moveTimer = setTimeout(function () {
-      // stop the movement
-      thisnode.obj.movementStopped = true
-    }, TIMEOUT * 1000)
+    var thisnode = this;
+    this.moveTimer = setTimeout(function() {
+      //stop the movement
+      thisnode.obj.movementStopped = true;
+    }, TIMEOUT * 1000);
 
     if (this.moving) {
-      return
+      return;
     }
-    this.moving = true
-    this.obj.movementStopped = false
-    this.animateLoop()
-  }
+    this.moving = true;
+    this.obj.movementStopped = false;
+    this.animateLoop();
+  };
 
   // ROOT NODE ONLY:  animate all nodes (calls itself recursively)
-  Node.prototype.animateLoop = function () {
-    var i, len, mynode = this
-    this.obj.canvas.clear()
+  Node.prototype.animateLoop = function() {
+    var i,
+      len,
+      mynode = this;
+    this.obj.canvas.clear();
     for (i = 0, len = this.obj.lines.length; i < len; i++) {
-      this.obj.lines[i].updatePosition()
+      this.obj.lines[i].updatePosition();
     }
     if (this.findEquilibrium() || this.obj.movementStopped) {
-      this.moving = false
-      return
+      this.moving = false;
+      return;
     }
-    setTimeout(function () {
-      mynode.animateLoop()
-    }, 10)
-  }
+    setTimeout(function() {
+      mynode.animateLoop();
+    }, 10);
+  };
 
   // find the right position for this node
-  Node.prototype.findEquilibrium = function () {
-    var i, len, stable = true
-    stable = this.display() && stable
+  Node.prototype.findEquilibrium = function() {
+    var i,
+      len,
+      stable = true;
+    stable = this.display() && stable;
     for (i = 0, len = this.children.length; i < len; i++) {
-      stable = this.children[i].findEquilibrium() && stable
+      stable = this.children[i].findEquilibrium() && stable;
     }
-    return stable
-  }
+    return stable;
+  };
 
-  // Display this node, and its children
-  Node.prototype.display = function (depth) {
+  //Display this node, and its children
+  Node.prototype.display = function(depth) {
     var parent = this,
       stepAngle,
-      angle
+      angle;
 
-    depth = depth || 0
+    depth = depth || 0;
 
     if (this.visible) {
       // if: I'm not active AND my parent's not active AND my children aren't active ...
-      if (this.obj.activeNode !== this && this.obj.activeNode !== this.parent && this.obj.activeNode.parent !== this) {
+      if (
+        this.obj.activeNode !== this &&
+        this.obj.activeNode !== this.parent &&
+        this.obj.activeNode.parent !== this
+      ) {
         // TODO hide me!
-        this.el.hide()
-        this.visible = false
+        this.el.hide();
+        this.visible = false;
       }
     } else {
-      if (this.obj.activeNode === this || this.obj.activeNode === this.parent || this.obj.activeNode.parent === this) {
-        this.el.show()
-        this.visible = true
+      if (
+        this.obj.activeNode === this ||
+        this.obj.activeNode === this.parent ||
+        this.obj.activeNode.parent === this
+      ) {
+        this.el.show();
+        this.visible = true;
       }
     }
-    this.drawn = true
+    this.drawn = true;
     // am I positioned?  If not, position me.
     if (!this.hasPosition) {
-      this.x = this.options.mapArea.x / 2
-      this.y = this.options.mapArea.y / 2
-      this.el.css({'left': this.x + 'px', 'top': this.y + 'px'})
-      this.hasPosition = true
+      this.x = this.options.mapArea.x / 2;
+      this.y = this.options.mapArea.y / 2;
+      this.el.css({ left: this.x + 'px', top: this.y + 'px' });
+      this.hasPosition = true;
     }
     // are my children positioned?  if not, lay out my children around me
-    stepAngle = Math.PI * 2 / this.children.length
-    $.each(this.children, function (index) {
+    stepAngle = (Math.PI * 2) / this.children.length;
+    jQuery.each(this.children, function(index) {
       if (!this.hasPosition) {
         if (!this.options.showProgressive || depth <= 1) {
-          angle = index * stepAngle
-          this.x = (50 * Math.cos(angle)) + parent.x
-          this.y = (50 * Math.sin(angle)) + parent.y
-          this.hasPosition = true
-          this.el.css({'left': this.x + 'px', 'top': this.y + 'px'})
+          angle = index * stepAngle;
+          this.x = 50 * Math.cos(angle) + parent.x;
+          this.y = 50 * Math.sin(angle) + parent.y;
+          this.hasPosition = true;
+          this.el.css({ left: this.x + 'px', top: this.y + 'px' });
         }
       }
-    })
+    });
     // update my position
-    return this.updatePosition()
-  }
-
+    return this.updatePosition();
+  };
 
   // updatePosition returns a boolean stating whether it's been static
-  Node.prototype.updatePosition = function () {
-    var forces, showx, showy
-
+  Node.prototype.updatePosition = function() {
+    var forces, showx, showy;
+  //  console.log(forces,showx,showy)
     if (this.el.hasClass('ui-draggable-dragging')) {
-      this.x = parseInt(this.el.css('left'), 10) + (this.el.width() / 2)
-      this.y = parseInt(this.el.css('top'), 10) + (this.el.height() / 2)
-      this.dx = 0
-      this.dy = 0
-      return false
+      this.x = parseInt(this.el.css('left'), 10) + this.el.width() / 2;
+      this.y = parseInt(this.el.css('top'), 10) + this.el.height() / 2;
+      this.dx = 0;
+      this.dy = 0;
+      return false;
     }
 
-    // apply accelerations
-    forces = this.getForceVector()
-    this.dx += forces.x * this.options.timeperiod
-    this.dy += forces.y * this.options.timeperiod
+    //apply accelerations
+    forces = this.getForceVector();
+    this.dx += forces.x * this.options.timeperiod;
+    this.dy += forces.y * this.options.timeperiod;
 
     // damp the forces
-    this.dx = this.dx * this.options.damping
-    this.dy = this.dy * this.options.damping
+    this.dx = this.dx * this.options.damping;
+    this.dy = this.dy * this.options.damping;
 
-    // ADD MINIMUM SPEEDS
+    //ADD MINIMUM SPEEDS
     if (Math.abs(this.dx) < this.options.minSpeed) {
-      this.dx = 0
+      this.dx = 0;
     }
     if (Math.abs(this.dy) < this.options.minSpeed) {
-      this.dy = 0
+      this.dy = 0;
     }
     if (Math.abs(this.dx) + Math.abs(this.dy) === 0) {
-      return true
+      return true;
     }
-    // apply velocity vector
-    this.x += this.dx * this.options.timeperiod
-    this.y += this.dy * this.options.timeperiod
-    this.x = Math.min(this.options.mapArea.x, Math.max(1, this.x))
-    this.y = Math.min(this.options.mapArea.y, Math.max(1, this.y))
+    //apply velocity vector
+    this.x += this.dx * this.options.timeperiod;
+    this.y += this.dy * this.options.timeperiod;
+    this.x = Math.min(this.options.mapArea.x, Math.max(1, this.x));
+    this.y = Math.min(this.options.mapArea.y, Math.max(1, this.y));
     // display
-    showx = this.x - (this.el.width() / 2)
-    showy = this.y - (this.el.height() / 2) - 10
-    this.el.css({'left': showx + 'px', 'top': showy + 'px'})
-    return false
-  }
+    showx = this.x - this.el.width() / 2;
+    showy = this.y - this.el.height() / 2 - 10;
+    this.el.css({ left: showx + 'px', top: showy + 'px' });
+    return false;
+  };
 
-  Node.prototype.getForceVector = function () {
-    var i, x1, y1, xsign, dist, theta, f,
-      xdist, rightdist, bottomdist, otherend,
+  Node.prototype.getForceVector = function() {
+    var i,
+      x1,
+      y1,
+      xsign,
+      dist,
+      theta,
+      f,
+      xdist,
+      rightdist,
+      bottomdist,
+      otherend,
       fx = 0,
       fy = 0,
       nodes = this.obj.nodes,
-      lines = this.obj.lines
+      lines = this.obj.lines;
 
     // Calculate the repulsive force from every other node
     for (i = 0; i < nodes.length; i++) {
       if (nodes[i] === this) {
-        continue
+        continue;
       }
       if (!nodes[i].visible) {
-        continue
+        continue;
       }
       // Repulsive force (coulomb's law)
-      x1 = (nodes[i].x - this.x)
-      y1 = (nodes[i].y - this.y)
-      // adjust for variable node size
-      //    var nodewidths = (($(nodes[i]).width() + this.el.width())/2)
-      dist = Math.sqrt((x1 * x1) + (y1 * y1))
-      //      var myrepulse = this.options.repulse
-      //      if (this.parent==nodes[i]) myrepulse=myrepulse*10  //parents stand further away
+      x1 = nodes[i].x - this.x;
+      y1 = nodes[i].y - this.y;
+      //adjust for variable node size
+      //    var nodewidths = ((jQuery(nodes[i]).width() + this.el.width())/2);
+      dist = Math.sqrt(x1 * x1 + y1 * y1);
+      //      var myrepulse = this.options.repulse;
+      //      if (this.parent==nodes[i]) myrepulse=myrepulse*10;  //parents stand further away
       if (Math.abs(dist) < 500) {
         if (x1 === 0) {
-          theta = Math.PI / 2
-          xsign = 0
+          theta = Math.PI / 2;
+          xsign = 0;
         } else {
-          theta = Math.atan(y1 / x1)
-          xsign = x1 / Math.abs(x1)
+          theta = Math.atan(y1 / x1);
+          xsign = x1 / Math.abs(x1);
         }
         // force is based on radial distance
-        f = (this.options.repulse * 500) / (dist * dist)
-        fx += -f * Math.cos(theta) * xsign
-        fy += -f * Math.sin(theta) * xsign
+        f = (this.options.repulse * 500) / (dist * dist);
+        fx += -f * Math.cos(theta) * xsign;
+        fy += -f * Math.sin(theta) * xsign;
       }
     }
 
     // add repulsive force of the "walls"
-    // left wall
-    xdist = this.x + this.el.width()
-    f = (this.options.wallrepulse * 500) / (xdist * xdist)
-    fx += Math.min(2, f)
-    // right wall
-    rightdist = (this.options.mapArea.x - xdist)
-    f = -(this.options.wallrepulse * 500) / (rightdist * rightdist)
-    fx += Math.max(-2, f)
-    // top wall
-    f = (this.options.wallrepulse * 500) / (this.y * this.y)
-    fy += Math.min(2, f)
-    // bottom wall
-    bottomdist = (this.options.mapArea.y - this.y)
-    f = -(this.options.wallrepulse * 500) / (bottomdist * bottomdist)
-    fy += Math.max(-2, f)
+    //left wall
+    xdist = this.x + this.el.width();
+    f = (this.options.wallrepulse * 500) / (xdist * xdist);
+    fx += Math.min(2, f);
+    //right wall
+    rightdist = this.options.mapArea.x - xdist;
+    f = -(this.options.wallrepulse * 500) / (rightdist * rightdist);
+    fx += Math.max(-2, f);
+    //top wall
+    f = (this.options.wallrepulse * 500) / (this.y * this.y);
+    fy += Math.min(2, f);
+    //bottom wall
+    bottomdist = this.options.mapArea.y - this.y;
+    f = -(this.options.wallrepulse * 500) / (bottomdist * bottomdist);
+    fy += Math.max(-2, f);
 
     // for each line, of which I'm a part, add an attractive force.
     for (i = 0; i < lines.length; i++) {
-      otherend = null
+      otherend = null;
       if (lines[i].start === this) {
-        otherend = lines[i].end
+        otherend = lines[i].end;
       } else if (lines[i].end === this) {
-        otherend = lines[i].start
+        otherend = lines[i].start;
       } else {
-        continue
+        continue;
       }
       // Ignore the pull of hidden nodes
       if (!otherend.visible) {
-        continue
+        continue;
       }
       // Attractive force (hooke's law)
-      x1 = (otherend.x - this.x)
-      y1 = (otherend.y - this.y)
-      dist = Math.sqrt((x1 * x1) + (y1 * y1))
+      x1 = otherend.x - this.x;
+      y1 = otherend.y - this.y;
+      dist = Math.sqrt(x1 * x1 + y1 * y1);
       if (Math.abs(dist) > 0) {
         if (x1 === 0) {
-          theta = Math.PI / 2
-          xsign = 0
-        }else {
-          theta = Math.atan(y1 / x1)
-          xsign = x1 / Math.abs(x1)
+          theta = Math.PI / 2;
+          xsign = 0;
+        } else {
+          theta = Math.atan(y1 / x1);
+          xsign = x1 / Math.abs(x1);
         }
         // force is based on radial distance
-        f = (this.options.attract * dist) / 10000
-        fx += f * Math.cos(theta) * xsign
-        fy += f * Math.sin(theta) * xsign
+        f = (this.options.attract * dist) / 10000;
+        fx += f * Math.cos(theta) * xsign;
+        fy += f * Math.sin(theta) * xsign;
       }
     }
 
     // if I'm active, attract me to the centre of the area
     if (this.obj.activeNode === this) {
       // Attractive force (hooke's law)
-      otherend = this.options.mapArea
-      x1 = ((otherend.x / 2) - this.options.centreOffset - this.x)
-      y1 = ((otherend.y / 2) - this.y)
-      dist = Math.sqrt((x1 * x1) + (y1 * y1))
+      otherend = this.options.mapArea;
+      x1 = otherend.x / 2 - this.options.centreOffset - this.x;
+      y1 = otherend.y / 2 - this.y;
+      dist = Math.sqrt(x1 * x1 + y1 * y1);
       if (Math.abs(dist) > 0) {
         if (x1 === 0) {
-          theta = Math.PI / 2
-          xsign = 0
+          theta = Math.PI / 2;
+          xsign = 0;
         } else {
-          xsign = x1 / Math.abs(x1)
-          theta = Math.atan(y1 / x1)
+          xsign = x1 / Math.abs(x1);
+          theta = Math.atan(y1 / x1);
         }
         // force is based on radial distance
-        f = (0.1 * this.options.attract * dist * CENTRE_FORCE) / 1000
-        fx += f * Math.cos(theta) * xsign
-        fy += f * Math.sin(theta) * xsign
+        f = (0.1 * this.options.attract * dist * CENTRE_FORCE) / 1000;
+        fx += f * Math.cos(theta) * xsign;
+        fy += f * Math.sin(theta) * xsign;
       }
     }
 
     if (Math.abs(fx) > this.options.maxForce) {
-      fx = this.options.maxForce * (fx / Math.abs(fx))
+      fx = this.options.maxForce * (fx / Math.abs(fx));
     }
     if (Math.abs(fy) > this.options.maxForce) {
-      fy = this.options.maxForce * (fy / Math.abs(fy))
+      fy = this.options.maxForce * (fy / Math.abs(fy));
     }
     return {
       x: fx,
-      y: fy
-    }
-  }
+      y: fy,
+    };
+  };
 
-  Node.prototype.removeNode = function () {
+  Node.prototype.removeNode = function() {
     var i,
       oldnodes = this.obj.nodes,
-      oldlines = this.obj.lines
+      oldlines = this.obj.lines;
 
     for (i = 0; i < this.children.length; i++) {
-      this.children[i].removeNode()
+      this.children[i].removeNode();
     }
 
-    this.obj.nodes = []
+    this.obj.nodes = [];
     for (i = 0; i < oldnodes.length; i++) {
       if (oldnodes[i] === this) {
-        continue
+        continue;
       }
-      this.obj.nodes.push(oldnodes[i])
+      this.obj.nodes.push(oldnodes[i]);
     }
 
-    this.obj.lines = []
+    this.obj.lines = [];
     for (i = 0; i < oldlines.length; i++) {
       if (oldlines[i].start === this) {
-        continue
+        continue;
       } else if (oldlines[i].end === this) {
-        continue
+        continue;
       }
-      this.obj.lines.push(oldlines[i])
+      this.obj.lines.push(oldlines[i]);
     }
 
-    this.el.remove()
-  }
+    this.el.remove();
+  };
 
   // Define all Line related functions.
-  Line = function (obj, startNode, endNode) {
-    this.obj = obj
-    this.options = obj.options
-    this.start = startNode
-    this.colour = 'blue'
-    this.size = 'thick'
-    this.end = endNode
-  }
+  Line = function(obj, startNode, endNode) {
+    this.obj = obj;
+    this.options = obj.options;
+    this.start = startNode;
+    this.colour = 'blue';
+    this.size = 'thick';
+    this.end = endNode;
+  };
 
-  Line.prototype.updatePosition = function () {
-    if (!this.options.showSublines && (!this.start.visible || !this.end.visible)) {
-      return
+  Line.prototype.updatePosition = function() {
+    if (
+      !this.options.showSublines &&
+      (!this.start.visible || !this.end.visible)
+    ) {
+      return;
     }
-    this.size = (this.start.visible && this.end.visible) ? 'thick' : 'thin'
-    this.color = (this.obj.activeNode.parent === this.start || this.obj.activeNode.parent === this.end) ? 'red' : 'blue'
-    this.strokeStyle = '#FFF'
+    this.size = this.start.visible && this.end.visible ? 'thick' : 'thin';
+    this.color =
+      this.obj.activeNode.parent === this.start ||
+      this.obj.activeNode.parent === this.end
+        ? 'red'
+        : 'blue';
+    this.strokeStyle = '#ff0';
 
-    this.obj.canvas.path('M' + this.start.x + ' ' + this.start.y + 'L' + this.end.x + ' ' + this.end.y).attr({'stroke': this.strokeStyle, 'opacity': 0.2, 'stroke-width': '5px'})
-  }
+    this.obj.canvas
+      .path(
+        'M' +
+          this.start.x +
+          ' ' +
+          this.start.y +
+          'L' +
+          this.end.x +
+          ' ' +
+          this.end.y
+      )
+      .attr({ stroke: this.strokeStyle, opacity: 1, 'stroke-width': '2px' });
+  };
 
-  $.fn.addNode = function (parent, name, options) {
+  jQuery.fn.addNode = function(parent, name, options) {
     var obj = this[0],
-      node = obj.nodes[obj.nodes.length] = new Node(obj, name, parent, options)
-    console.log(obj.root)
-    obj.root.animateToStatic()
-    return node
-  }
+      node = (obj.nodes[obj.nodes.length] = new Node(
+        obj,
+        name,
+        parent,
+        options
+      ));
+  //  console.log('add-node', obj.root);
+    obj.root.animateToStatic();
+    return node;
+  };
 
-  $.fn.addRootNode = function (name, opts) {
-    var node = this[0].nodes[0] = new Node(this[0], name, null, opts)
-    this[0].root = node
-    return node
-  }
+  jQuery.fn.addRootNode = function(name, opts) {
+    var node = (this[0].nodes[0] = new Node(this[0], name, null, opts));
+    this[0].root = node;
+    return node;
+  };
 
-  $.fn.removeNode = function (name) {
-    return this.each(function () {
-      //      if (!!this.mindmapInit) return false
-      // remove a node matching the anme
-      //      alert(name+' removed')
-    })
-  }
+  jQuery.fn.removeNode = function(name) {
+    return this.each(function() {
+      //      if (!!this.mindmapInit) return false;
+      //remove a node matching the anme
+      //      alert(name+' removed');
+    });
+  };
 
-  $.fn.mindmap = function (options) {
+  jQuery.fn.mindmap = function(options) {
     // Define default settings.
-    options = $.extend({
-      attract: 15,
-      repulse: 6,
-      damping: 0.55,
-      timeperiod: 10,
-      wallrepulse: 0.4,
-      mapArea: {
-        x: -1,
-        y: -1
+    options = jQuery.extend(
+      {
+        attract: 6,
+        repulse: 6,
+        damping: 0.55,
+        timeperiod: 10,
+        wallrepulse: 0.4,
+        mapArea: {
+          x: -1,
+          y: -1,
+        },
+        canvasError: 'alert',
+        minSpeed: 0.05,
+        maxForce: 0.1,
+        showSublines: false,
+        updateIterationCount: 20,
+        showProgressive: true,
+        centreOffset: 100,
+        timer: 0,
       },
-      canvasError: 'alert',
-      minSpeed: 0.05,
-      maxForce: 0.1,
-      showSublines: false,
-      updateIterationCount: 20,
-      showProgressive: true,
-      centreOffset: 100,
-      timer: 0
-    }, options)
+      options
+    );
 
-    var $window = $(window)
+    var jQuerywindow = jQuery("#mindmap");
 
-    return this.each(function () {
-      var mindmap = this
+    return this.each(function() {
+      var mindmap = this;
 
-      this.mindmapInit = true
-      this.nodes = []
-      this.lines = []
-      this.activeNode = null
-      this.options = options
-      this.animateToStatic = function () {
-        this.root.animateToStatic()
-      }
-      $window.resize(function () {
-        mindmap.animateToStatic()
-      })
+      this.mindmapInit = true;
+      this.nodes = [];
+      this.lines = [];
+      this.activeNode = null;
+      this.options = options;
+      this.animateToStatic = function() {
+        this.root.animateToStatic();
+      };
+      jQuerywindow.resize(function() {
+        mindmap.animateToStatic();
+      });
 
-      // canvas
+      //canvas
+      console.log("mindmap width", mindmap_width, "mindmap height", mindmap_height)
       if (options.mapArea.x === -1) {
-        options.mapArea.x = $window.width()
+        options.mapArea.x = mindmap_width;
       }
       if (options.mapArea.y === -1) {
-        options.mapArea.y = $window.height()
+        options.mapArea.y = mindmap_height;
       }
-      // create drawing area
-      this.canvas = Raphael(0, 0, options.mapArea.x, options.mapArea.y)
+      //create drawing area
+      this.canvas = Raphael(0, 0, options.mapArea.x, options.mapArea.y);
 
       // Add a class to the object, so that styles can be applied
-      $(this).addClass('js-mindmap-active')
+      jQuery(this).addClass('js-mindmap-active');
 
       // Add keyboard support (thanks to wadefs)
-      $(this).keyup(function (event) {
-        var newNode, i, activeParent = mindmap.activeNode.parent
+      jQuery(this).keyup(function(event) {
+        var newNode,
+          i,
+          activeParent = mindmap.activeNode.parent;
         switch (event.which) {
           case 33: // PgUp
           case 38: // Up, move to parent
             if (activeParent) {
-              activeParent.el.click()
+              activeParent.el.click();
             }
-            break
+            break;
           case 13: // Enter (change to insert a sibling)
           case 34: // PgDn
           case 40: // Down, move to first child
             if (mindmap.activeNode.children.length) {
-              mindmap.activeNode.children[0].el.click()
+              mindmap.activeNode.children[0].el.click();
             }
-            break
+            break;
           case 37: // Left, move to previous sibling
             if (activeParent) {
-              newNode = null
+              newNode = null;
               if (activeParent.children[0] === mindmap.activeNode) {
-                newNode = activeParent.children[activeParent.children.length - 1]
+                newNode =
+                  activeParent.children[activeParent.children.length - 1];
               } else {
                 for (i = 1; i < activeParent.children.length; i++) {
                   if (activeParent.children[i] === mindmap.activeNode) {
-                    newNode = activeParent.children[i - 1]
+                    newNode = activeParent.children[i - 1];
                   }
                 }
               }
               if (newNode) {
-                newNode.el.click()
+                newNode.el.click();
               }
             }
-            break
+            break;
           case 39: // Right, move to next sibling
             if (activeParent) {
-              newNode = null
-              if (activeParent.children[activeParent.children.length - 1] === mindmap.activeNode) {
-                newNode = activeParent.children[0]
+              newNode = null;
+              if (
+                activeParent.children[activeParent.children.length - 1] ===
+                mindmap.activeNode
+              ) {
+                newNode = activeParent.children[0];
               } else {
                 for (i = activeParent.children.length - 2; i >= 0; i--) {
                   if (activeParent.children[i] === mindmap.activeNode) {
-                    newNode = activeParent.children[i + 1]
+                    newNode = activeParent.children[i + 1];
                   }
                 }
               }
               if (newNode) {
-                newNode.el.click()
+                newNode.el.click();
               }
             }
-            break
+            break;
           case 45: // Ins, insert a child
-            break
+            break;
           case 46: // Del, delete this node
-            break
+            break;
           case 27: // Esc, cancel insert
-            break
+            break;
           case 83: // 'S', save
-            break
+            break;
         }
-        return false
-      })
-    })
-  }
-}(jQuery))
+        return false;
+      });
+    });
+  };
+})(jQuery);
 
 /*jslint devel: true, browser: true, continue: true, plusplus: true, indent: 2 */
+var mindmapNodes = {};
+
+function setPostNodes(related_posts){
+  var post_nodes = []
+    console.log("post nodes",posts)
+
+  for (var p  in related_posts) {
+    console.log("related",p, related_posts[p], posts[related_posts[p]].related)
+  }
+
+  return post_nodes
+}
+
+
+function setMindMapNotch(notch) {
+  var mindmapData = {},
+  id = notch.object_id,
+  nav_type = notch.object
+
+  mindmapData.root = {
+    nav_type : nav_type,
+    id: id,
+    title: notch.title,
+    href: notch.url,
+    className:'root-node',
+    nodes: []
+  }
+
+  if (nav_type == "category") {
+    if (categories[id].posts != undefined) {
+        console.log("cat", categories[id].posts)
+        categories[id].nodes = setPostNodes(categories[id].posts)
+      for (c = 0; c < categories[id].posts.length; c++) {
+          console.log("cat notch",categories[id].posts[c])
+        
+
+            mindmapData.root.nodes.push(posts[categories[id].posts[c]])
+        }
+    }
+
+  }
+
+
+  loadMindmap('#mindmap', mindmapData)
+
+}
+function setGrandChildren(child_node) {
+
+  var grandchildren = []
+  
+
+  if (child_node.related != undefined) {
+
+    for (var p in child_node.related) {
+     // console.log("related", p, child_node.related[p], posts[child_node.related[p]])
+      grandchildren.push(posts[child_node.related[p]])
+    }
+  }
+
+
+  return grandchildren
+}
+
+function loadMindmap(target_div, mindmapData) {
+  if (initMindMap == false) {
+    initMindMap = true
+  } else {
+   // root.removeNode();
+  }
+  mindmap_width = jQuery(target_div).css("width");
+  mindmap_height = jQuery(target_div).css("height");
+  console.log(mindmapData);
+
+  var create_root = function(){
+    return (jQuery(target_div).addRootNode(mindmapData.root.title, {
+      href: '/',
+      url: '/',
+      // size: jQuery(target_div + '>ul>li>a').attr('size'),
+      // color: jQuery(target_div + '>ul>li>a').attr('color'),
+      onclick: function (node) {
+        jQuery(node.obj.activeNode.content)
+          .each(function () {
+            this.hide();
+          });
+      }
+    }))
+  }
+
+  var addLI = function (child_node,parent_node) {
+
+    
+   
+      console.log('childnode',child_node)
+    // var parentnode = jQuery(this)
+        parentnode = root;
+      
+      this.mynode = jQuery(target_div).addNode(parent_node, 
+          child_node.title, {
+          //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
+          href: "/",
+          size: "/",
+          color: "red",
+          onclick: function (node) {
+            jQuery(node.obj.activeNode.content)
+              .each(function () {
+                this.hide();
+              });
+            jQuery(node.content).each(function () {
+              this.show();
+            });
+          }
+        });
+      
+      var grandchildren = setGrandChildren(child_node)
+      var current_node = this.mynode
+
+      for(g=0;g<grandchildren.length;g++){
+        if(grandchildren[g].id != child_node.id){
+          console.log("grandchild", grandchildren[g].id,child_node.id, this.mynode);
+          
+          this.mynode = jQuery(target_div).addNode(current_node,
+            grandchildren[g].title, {
+            //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
+            href: "/",
+            size: "/",
+            color: "green",
+            onclick: function (node) {
+              jQuery(node.obj.activeNode.content)
+                .each(function () {
+                  this.hide();
+                });
+              jQuery(node.content).each(function () {
+                this.show();
+              });
+            }
+          });
+
+        }
+      }
+     
+      jQuery(this).hide();
+      
+        
+
+    //jQuery('>ul>li', this).each(addLI);
+  }
+  
+
+
+
+console.log('nodes', mindmapData.root.nodes)
+if (mindmapData.root.nodes.length >0){ // intializes nod build.
+  
+  
+  
+  jQuery(target_div).html('') // empties the contatiner div
+var  root = create_root();// runs the root creation function based on variables passed in.
+console.log('htmlroot', root);
+  for (n=0; n<mindmapData.root.nodes.length;n++){
+    addLI(mindmapData.root.nodes[n], root)// loops through the first nodes
+  }
+} 
+
+}
+
+  /*
+  //ORIGINAL CODE that crawls list, to be disposed of
+  var root = (jQuery(target_div + '>ul>li').get(0).mynode = jQuery(
+    target_div
+  ).addRootNode(jQuery(target_div + '>ul>li>a').text(), {
+    href: '/',
+    url: '/',
+    size: jQuery(target_div + '>ul>li>a').attr('size'),
+    color: jQuery(target_div + '>ul>li>a').attr('color'),
+    onclick: function(node) {
+      jQuery(node.obj.activeNode.content).each(function() {
+        this.hide();
+      });
+    },
+  }));
+  
+  console.log('htmlroot', root);
+
+  jQuery(target_div + '>ul>li').hide();
+
+  var addLI = function() {
+    var parentnode = jQuery(this)
+      .parents('li')
+      .get(0);
+    if (typeof parentnode == 'undefined') parentnode = root;
+    else parentnode = parentnode.mynode;
+
+    this.mynode = jQuery(target_div).addNode(
+      parentnode,
+      jQuery('a:eq(0)', this).text(),
+      {
+        //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
+        href: jQuery('a:eq(0)', this).attr('href'),
+        size: jQuery('a:eq(0)', this).attr('size'),
+        color: jQuery('a:eq(0)', this).attr('color'),
+        onclick: function(node) {
+          jQuery(node.obj.activeNode.content).each(function() {
+            this.hide();
+          });
+          jQuery(node.content).each(function() {
+            this.show();
+          });
+        },
+      }
+    );
+    jQuery(this).hide();
+    jQuery('>ul>li', this).each(addLI);
+  };
+
+  jQuery(target_div + '>ul>li>ul').each(function() {
+    jQuery('>li', this).each(addLI);
+  });
+  */

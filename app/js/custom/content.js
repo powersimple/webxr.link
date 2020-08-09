@@ -5,7 +5,7 @@ function setSlideContent(slide, id) {
         content_length = posts[id].content.length
         
         jQuery("#slide" + id + " h2").html(posts[id].title)
-        console.log("title="+title_length,"content"+content_length)
+     //   console.log("title="+title_length,"content"+content_length)
 
       jQuery("#slide" + id + " section div.content").html(posts[id].content)
       $carousel.slick('slickGoTo', slide);

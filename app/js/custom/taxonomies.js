@@ -1,6 +1,7 @@
+
 function setChildCategories(data) {
   for (var i = 0; i < data.length; i++) {
-    categories[data[i].id] = data[i];
+    category[data[i].id] = data[i];
   }
   // console.log('categories', categories)
 

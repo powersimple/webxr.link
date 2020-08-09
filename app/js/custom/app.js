@@ -13,19 +13,19 @@ a.innerHTML = icon;
 
 //  document.body.appendChild(a);
 
-var increment = 'vw';
-(oriented = 'horizontal'), // BECAUSE iOS doesn't like the variable orientation
-  (orientation_last = ''),
-  (slider_orientation = 'vertical'), //
-  (dimension = 'wide'),
-  (maxed = false),
-  (maxed_last = false),
-  (maxed_changed = false),
-  (slider_menu = 'wheel-menu'),
-  (_w = jQuery(window).width()),
-  (_h = jQuery(window).height()),
-  (aspect = _w / _h),
-  (current_notch = 0);
+var increment = 'vw',
+  oriented = 'horizontal', // BECAUSE iOS doesn't like the variable orientation
+  orientation_last = '',
+  slider_orientation = 'horizontal', //default
+  dimension = 'wide',
+  maxed = false,
+  maxed_last = false,
+  maxed_changed = false,
+  slider_menu = 'wheel-menu',
+  _w = jQuery(window).width(),
+  _h = jQuery(window).height(),
+  aspect = _w / _h,
+  current_notch = 0;
 var wheel_nav_params = {};
 jQuery(document).ready(function() {
   jQuery('.wheelnav-outer-nav-title').css('display:none;');
@@ -102,18 +102,18 @@ function initSite() {
 function setWheelNavParams() {
   wheel_nav_params = {
     maxPercent: 1,
-    min: 0.91,
+    min: 0.80,
     max: 1,
-    sel_min: 0.91,
+    sel_min: 0.8,
     sel_max: 1,
   };
 
   if (maxed == true) {
     wheel_nav_params = {
       maxPercent: 1,
-      min: 0.85,
+      min: 0.80,
       max: 1,
-      sel_min: 0.85,
+      sel_min: 0.80,
       sel_max: 1,
     };
   }
@@ -125,18 +125,18 @@ function positionElements() {
 
   var elements = ['#main', 'header', 'footer', '#related', '#screen'];
 
-  slider_orientation: 'vertical';
+  slider_orientation: 'horizontal';
   dimension = 'wide';
 
   if (_w < _h) {
     // sets orientation
 
-    oriented = 'vertical';
+    //oriented = 'vertical';
 
     slider_orientation = 'horizontal';
   } else {
     oriented = 'horizontal';
-    slider_orientation = 'vertical';
+   // slider_orientation = 'vertical';
   }
 
   if (orientation_last != oriented) {
@@ -210,13 +210,13 @@ function positionProjector() {
 }
 
 function reposition_screen() {
-  var width = '90vw';
-  var height = '90vh';
-  var top = '50%';
-  var bottom = '50%';
+  var width = '100vw';
+  var height = '100vh';
+  var top = '0';
+  var bottom = '0';
   var left = 0;
-  var margin_top = '-5vh';
-  var margin_left = '5vw';
+  var margin_top = '0';
+  var margin_left = '0';
   var inc = 'vh';
 
   if (aspect <= 0.5) {

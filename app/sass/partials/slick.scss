@@ -23,11 +23,11 @@
             //border-radius:10%;
             //padding:5%;
             overflow:hidden;
-            width: 80%;
+           
             height:0px;
             padding-bottom: 60%;
-            margin-top:25%;
-            left:10%;
+           
+            
             div.content{
                 //overflow-y:scroll;
                 padding-right:50px;
@@ -86,12 +86,10 @@
          }
         }
     #wheel-menu-content, #projects-content {
-        width:50vh;
-        height:50vh;
-        left:50%;
-        top:50%;
-        margin-left:-25vh;
-        margin-top:-25vh;
+    width: 61.8vw;
+    height: 40vh;
+    left: 50%;
+    top: 50vh;
     }
 }
 #screen.vertical {

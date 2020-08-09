@@ -285,6 +285,16 @@ function resourceInfo( $meta_boxes ) {
 				'type' => 'url',
 				'name' => esc_html__( 'Github Repo URL', 'metabox-online-generator' ),
 			),
+			array(
+					'id' =>  'wikipedia',
+					'type' => 'url',
+					'name' => esc_html__( 'Wikipedia URL', 'metabox-online-generator' ),
+				),
+			array(
+				'id' =>  'mdn',
+				'type' => 'url',
+				'name' => esc_html__( 'MDN - Mozilla Developer Network', 'metabox-online-generator' ),
+			),
 		),
 	);
 
@@ -399,6 +409,35 @@ function relatedProfile( $meta_boxes ) {
 	return $meta_boxes;
 }
 add_filter( 'rwmb_meta_boxes', 'relatedProfile' );	
+
+function relatedResource( $meta_boxes ) {
+	$prefix = '';
+
+	$meta_boxes[] = array(
+		'id' => 'related-resource',
+		'title' => esc_html__( 'Related Resource', 'metabox-online-generator' ),
+		'post_types' => array('profile','resource'),
+		'context' => 'side',
+		'priority' => 'default',
+		'autosave' => 'false',
+		'fields' => array(
+			array(
+				'id' => $prefix . 'related-resource',
+				'type' => 'post',
+				'name' => esc_html__( '', 'metabox-online-generator' ),
+				'post_type' => 'resource',
+				'field_type' => 'checkbox_list',
+				'query_args' => array(
+					'post_category' => 'author',
+				),
+			),
+		),
+	);
+
+	return $meta_boxes;
+}
+add_filter( 'rwmb_meta_boxes', 'relatedResource' );	
+
 function relatedHardware( $meta_boxes ) {
 	$prefix = '';
 

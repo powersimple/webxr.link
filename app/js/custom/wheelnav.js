@@ -25,7 +25,7 @@ function makeWheelNav(dest, data, _p) {
     var titles = [];
     var ids = []
     wheels[dest] = new wheelnav(dest);
-    //console.log(dest,data,_p);
+   // console.log("initwheel",dest,data,_p);
     wheels[dest].spreaderEnable = false;
     //    WebSlice.titleRotateAngle -45;
     wheels[dest].cssMode = true;
@@ -69,7 +69,7 @@ function makeWheelNav(dest, data, _p) {
     }
 
     if (dest == 'outer-nav') {
-        //console.log("inner child", data[0].children)
+      
         if (data[0].children.length > 0) {
             //   console.log("inner child", data[0].children)
             makeWheelNav("inner-nav", data[0].children, wheel_nav_params)
@@ -85,7 +85,7 @@ function makeWheelNav(dest, data, _p) {
     for (var i = 0; i < wheels[dest].navItemCount; i++) {
 
 
-        // console.log("local-data",i,data[i]);
+     //    console.log("local-data",i,data[i]);
         /*
         type = data[i].type // set the type for the log
         if(type == "category"){
@@ -100,7 +100,7 @@ function makeWheelNav(dest, data, _p) {
 
         wheels[dest].navItems[i].navigateFunction = function() { // Click event for wheel - JSHint doesn't like it when you set events in a loop, but whaddyagonnado? Fuhgetaboudit, the browser doesn't seem to care. and you can't click on the wheel without this.
 
-            console.log()
+           
             jQuery("#slider").slider("option", "value", this.data.notch) //positions the slider handle
             setSliderNotch(menus['wheel-menu'].slug_nav[this.data.slug]) // triggers the notch
 
@@ -184,13 +184,13 @@ function triggerWheelNav(notch) {
 
     } else if (this_dest == 'inner-subnav') { // onto the third inner ring
         //congratulations outer-ring you're a grandparent.
-        console.log(' innersubnav')
+    //    console.log(' innersubnav')
 
 
 
         if (last_outer_notch != this_notch.grandparent) { //if we go backwards we need to change the parent.
             wheels["outer-nav"].navigateWheel(data_nav[this_notch.grandparent].slice) //dialback the outer ring to its slice
-            console.log("naviate outer", this_notch, "grand:", data_nav[this_notch.grandparent], "parent", data_nav[this_notch.parent]);
+          //  console.log("naviate outer", this_notch, "grand:", data_nav[this_notch.grandparent], "parent", data_nav[this_notch.parent]);
             last_outer_notch = this_notch.grandparent // set the outer notch back so we can go forward again.
             popAWheelie("inner-nav")
 
@@ -206,7 +206,7 @@ function triggerWheelNav(notch) {
         }
 
         if (last_inner_notch != this_notch.parent) { //who's your daddy?
-            console.log("where have I gone wrong?", this_notch, data_nav[this_notch.parent]);
+           // console.log("where have I gone wrong?", this_notch, data_nav[this_notch.parent]);
             //receate the inner ring for the parent
             wheels["inner-nav"].navigateWheel(data_nav[this_notch.parent].slice)
                 //now we can dial the inner ring where it belongs
@@ -218,11 +218,11 @@ function triggerWheelNav(notch) {
             console.log(wheels["inner-subnav"])
 
             if (wheels["inner-subnav"].raphael == undefined) {
-                console.log("make innersubnav", this_notch, last_inner_notch, data_nav[this_notch.parent]);
+         //       console.log("make innersubnav", this_notch, last_inner_notch, data_nav[this_notch.parent]);
                 makeWheelNav("inner-subnav", data_nav[this_notch.parent].children, wheel_nav_params) //birth of the inner ring
 
             } else {
-                console.log("navigate innersubnav", this_notch, last_inner_notch, data_nav[this_notch.parent]);
+               // console.log("navigate innersubnav", this_notch, last_inner_notch, data_nav[this_notch.parent]);
                 wheels[this_dest].navigateWheel(this_notch.slice) //steer inner ring
             }
         }

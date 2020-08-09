@@ -4,9 +4,7 @@ get_header(); ?>
   var useWheelNav = true
 </script>
 <main id="main" role="main">
-  <div  id="tag-cloud"></div>
- 
-  <div id="screen" class="phi-centered">
+ <div id="screen" class="phi-centered">
 
 
     <span class="ripple"></span>
@@ -51,48 +49,44 @@ get_header(); ?>
         <rect x="0" y="0" width="100%" height="100%" />
       </svg>
     </div><!-- outer nav ring -->
-    <section id="wheel-nav">
-    <nav id="outer-ring">
-      <div id="outer-nav" class="wheelNav"></div>
-    </nav>
-    <nav id="inner-ring">
-      <!-- inner nav ring -->
-      <div id="inner-nav" class="wheelNav"></div>
-    </nav>
-    <nav id="inner-subring">
-      <!-- inner subnav ring -->
-      <div id="inner-subnav" class="wheelNav"></div>
-    </nav>
-</section>
-    <section id="related"></section>
+      <section id="wheel-nav">
+        <nav id="outer-ring">
+          <div id="outer-nav" class="wheelNav"></div>
+        </nav>
+        <nav id="inner-ring">
+          <!-- inner nav ring -->
+          <div id="inner-nav" class="wheelNav"></div>
+        </nav>
+        <nav id="inner-subring">
+          <!-- inner subnav ring -->
+          <div id="inner-subnav" class="wheelNav"></div>
+        </nav>
+    </section>
+   
 
+  </div>
+   <section id="related"></section>
     <div id="slider-wrap">
       <div id="up-arrow" class="arrow"><?php include "svg/arrow-key.svg";?></div>
       <div id="slider"></div>
       <div id="down-arrow" class="arrow"><?php include "svg/arrow-key.svg";?></div>
     </div>
+      <div id="mindmap">
+  
+    </div>
+    
 
-  </div>
-  <div id="mindmap">
-  <ul>
-  <li><a href="index.html">Main Topic</a>
-    <ul>
-      <li><a href="index.html" size=50 color="green">Sub 1</a>
-        <ul>
-          <li><a href="index.html" size=100 color="green">Article 1</a></li>
-          <li><a href="index.html" size=-50 color="purple">Article 2</a></li>
-          <li><a href="index.html" size=50>Article 3</a></li>
-          <li><a href="index.html">Article 4</a></li>
-        </ul>
-      </li>
-      <li><a href="index.html">Sub 2</a></li>
-      <li><a href="index.html">Sub 3</a></li>
-      <li><a href="index.html">Sub 4</a></li>
-      <li><a href="index.html" size=-10>Sub 5</a></li>
-    </ul>
-  </li>
-</ul></div>
 </main>
+<script>
+  jQuery(document).ready(function() {
+  // enable the mindmap in the #mindmap
+  jQuery('#mindmap').mindmap();
+ //jQuery('#wheel-nav').css('display', 'none');
+  //jQuery('#slider-wrap').css('display', 'none');
+  // add the data to the mindmap
+ // loadMindmap('#mindmap');
+});
+</script>
 <?php
 get_footer(); 
 ?>

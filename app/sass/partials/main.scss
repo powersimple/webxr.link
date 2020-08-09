@@ -1,9 +1,4 @@
-body {
-    background-color: #000 !important;
-    color: #000;
-    font-family: 'Cabin', sans-serif;
-    /// background: url(images/bg/measure.jpg) center top #ccc !important;
-}
+
 
 html,
 body {
@@ -64,7 +59,9 @@ a:hover {
     text-align: center;
     margin: 0px auto;
 }
-
+h1, h2, h3{
+    font-family:'Audiowide';
+}
 #circle-mask {
     // display: none;//THIS HAD BORDERS, better to use border-radius on the video
     svg {

@@ -422,8 +422,9 @@ function get_posts_by_category( $object ) {
     'tax_query' => array(
 			array(
 				'taxonomy' => 'category',
-				'field'    => 'term_id',
-				'terms'    => $object['id']
+				'field'    => 'term_taxonomy_id',
+				'terms'    => $object['id'],
+				'include_children' => false
 			),
 			
 			

@@ -1,6 +1,6 @@
 {
     "packages": [
-        "xr/*"
+        "xr/lib/*"
     ],
     "version": "0.30.1",
     "command": {
