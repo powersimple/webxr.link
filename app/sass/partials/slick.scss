@@ -82,14 +82,16 @@
      
          .slide-wrap{
             height:50vh;
-
+            section{
+                margin-top:5vh;
+            }
          }
         }
     #wheel-menu-content, #projects-content {
     width: 61.8vw;
     height: 40vh;
     left: 50%;
-    top: 50vh;
+    top: 60vh;
     }
 }
 #screen.vertical {

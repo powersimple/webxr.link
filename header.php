@@ -103,12 +103,15 @@
         <div class="container">
          
           <div class="navbar-header">
-           <div  id="logo" class="onpage-navigation"><a class="navbar-brand" href="/"><img src="<?=get_stylesheet_directory_uri()?>/images/logo/logo.svg"></a></div>
+           <div  id="logo" class="onpage-navigation"><a class="navbar-brand" href="/"><img src="<?=get_stylesheet_directory_uri()?>/images/logo/logo.svg"></a>
+            <div id="site-title" class="onpage-navigation"><?=bloginfo("description");?></div>
+           </div>
+            
           </div>
           <div class="collapse navbar-collapse" id="custom-collapse">
          
 
-                    <div id="site-title" class="onpage-navigation"><?=bloginfo("description");?></div>
+                  
                   
                   
             </div>

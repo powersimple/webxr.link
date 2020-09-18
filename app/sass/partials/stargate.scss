@@ -1,0 +1,82 @@
+ #stargate{
+     display: none;
+.egyptsanim {animation: rotate 12s linear infinite;}
+        #circleText,
+        #circleTexta {
+            font-size: 7px;
+            font-weight: bold;
+        }
+
+        #circleText {
+            fill: #999;
+            filter: url(#shadow);
+        }
+
+        #circlePath {
+            fill: none;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(360deg);
+            }
+            to {
+                transform: rotate(0);
+            }
+        }
+
+        .iris {
+            background: #527297;
+            border-radius: 100%;
+            cursor: pointer;
+            position: relative;
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+            margin-top:-6vh;
+            margin-left:-7vw;
+            overflow: hidden;
+            transform: translateZ(0);
+            transition: box-shadow 2s ease-in-out
+        }
+
+
+        .iris:before,
+        .iris:after {
+            border-radius: 100%;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: inherit;
+            height: inherit;
+            box-shadow: inset 34.9vmin 0 0 hsla(225, 17%, 5%, 0.2),
+            inset 0 34.9vmin 0 hsla(225, 17%, 5%, 0.2), inset -34.9vmin 0 0 hsla(225, 17%, 5%, 0.2), inset 0 -34.9vmin hsla(225, 17%, 5%, 0.2);
+            transition: box-shadow 2s
+        }
+
+        .iris:after {
+            transform: rotate(45deg);
+        }
+
+        .irison:before,
+        .irison:after {
+            border-radius: 33.3333%;
+            box-shadow: inset 0 0 0 hsla(223, 14%, 26%, 0.2),
+            inset 0 0 0 hsla(223, 14%, 26%, 0.2), inset 0 0 0 hsla(223, 14%, 26%, 0.2), inset 0 0 hsla(223, 14%, 26%, 0.2);
+        }
+
+        .irison>#render {
+            opacity: 1;
+        }
+
+        .click {position:absolute;
+        color:white;
+        top:1vmin;
+        left:1vmin;
+        z-index:2;
+        }
+
+
+
+}

@@ -71,6 +71,7 @@ function setMenuItem(slug, item) {
   this_item.description = item.description;
   this_item.slug = item.slug;
   this_item.xfn = item.xfn;
+  
 
   this_item.children = []; //this array is populated in Set Menu
 //console.log("setMenuItem", this_item)

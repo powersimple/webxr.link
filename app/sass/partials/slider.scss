@@ -4,10 +4,10 @@
     position: absolute;
     z-index: 1500;
     transform-origin: center;
-    width:90vw;
-    height:2vh;
-    left:5%;
-    bottom:50px;
+    width:80vw;
+    height:20px;
+    left:10%;
+    bottom:0px;
     .arrow {
         position: absolute;
         width: 4vh;
@@ -25,9 +25,9 @@
         
     }
     .ui-slider-handle {
-            width: 2vw;
+            width: 10px;
             margin-left:-1vw;
-            height:3vh;
+            height:30px;
             margin-top:-0.75vh;
         }
 
@@ -53,7 +53,7 @@
     border: 3px ridge #ff0;
     
     border-radius: 1vh;
-    height:2vh;
+   
 
  }
 
@@ -108,7 +108,7 @@ key-fill,
   
     // transform: translate(19.9vw, 80vh);
    // width:70%;
-    height:2vh;
+
 
     #slider.ui-slider-horizontal {
         //height: 3.4vw;

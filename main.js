@@ -929,6 +929,99 @@ function setSlideContent(slide, id) {
     };
 
 }(jQuery));
+jQuery('.stargate')
+    .click(function () {
+
+        $('.iris').toggleClass('irison');
+        $('#egypts').toggleClass('egyptsanim');
+        $('audio')[0].play();
+        if ($('.iris').hasClass('irison')) {
+            $('audio')[1].loop = true;
+            $('audio')[1].play();
+        } else {
+            $('audio')[1].loop = false;
+            $('audio')[1].pause();
+            $('audio')[1].currentTime = 0;
+
+        }
+    });
+
+var container,
+    renderer,
+    scene,
+    camera,
+    mesh,
+    start = Date.now(),
+    fov = 30;
+
+var clock = new THREE.Clock();
+
+var timeUniform = {
+    iGlobalTime: {
+        type: 'f',
+        value: 0.1
+    },
+    iResolution: {
+        type: 'v2',
+        value: new THREE.Vector2()
+    }
+};
+
+timeUniform.iResolution.value.x = window.innerWidth / 4;
+timeUniform.iResolution.value.y = window.innerHeight / 4;
+
+window.addEventListener('load', function () {
+    container = document.getElementById('render');
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.x = 20;
+    camera.position.y = 10;
+    camera.position.z = 20;
+    camera.lookAt(scene.position);
+    scene.add(camera);
+
+    var axis = new THREE.AxisHelper(10);
+    scene.add(axis);
+
+    material = new THREE.ShaderMaterial({
+        uniforms: timeUniform,
+        vertexShader: document
+            .getElementById('vertex-shader')
+            .textContent,
+        fragmentShader: document
+            .getElementById('fragment-shader')
+            .textContent
+    });
+
+    var water = new THREE.Mesh(new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight, 40), material);
+    scene.add(water);
+
+    var geometry = new THREE.SphereGeometry(10, 32, 32);
+    var material = new THREE.MeshBasicMaterial({color: 0xffff00});
+    var sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    container.appendChild(renderer.domElement);
+
+    render();
+});
+
+window.addEventListener('resize', function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function render() {
+    timeUniform.iGlobalTime.value += clock.getDelta();
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+}
+
 // pass the type in the route
 // param = url arguments for the REST API
 // callback is a dynamic function name
@@ -1505,6 +1598,7 @@ function setMenuItem(slug, item) {
   this_item.description = item.description;
   this_item.slug = item.slug;
   this_item.xfn = item.xfn;
+  
 
   this_item.children = []; //this array is populated in Set Menu
 //console.log("setMenuItem", this_item)
@@ -1776,7 +1870,9 @@ function buildMenuData() {
     - themes
 
 */
-var initMindMap = false;
+//global vars
+var initMindMap = false,
+    mindmapCanvas = null;
 
 (function(jQuery) {
   'use strict';
@@ -1816,25 +1912,29 @@ mindmap_position = jQuery('#mindmap').position()
 
     // create the element for display
     // this.el = jQuery('<a href="' + this.href + '" style="width: ' + this.size + '; height: ' + this.size + ';"><div><span>' + this.name + '</span></div></a>').addClass('node').addClass(this.color);
-    var style = ''
-    if(opts.backgroundImage != ''){
-      style = 'style="background-image:url(' + opts.backgroundImage +')"'
-    }
+ 
+   
     this.el = jQuery(
-      '<a href="' +
+      '<a rel="" href="' +
         this.href +
-        '" '+style+'><div><span>' +
+        '"><div><span>' +
         this.name +
         '</span></div></a>'
     )
+
       .addClass('node')
 //      .addClass('node')
 
       .addClass(this.color)
       .addClass(this.size);
+
+    if (opts.backgroundImage != undefined) {
+
+      this.el.css("background-image", "url(" + opts.backgroundImage + ')')
+    }
     //  console.log(this.el)
     jQuery('#mindmap').prepend(this.el);
-
+  
     if (!parent) {
       obj.activeNode = this;
       this.el.addClass('active root');
@@ -1861,7 +1961,10 @@ mindmap_position = jQuery('#mindmap').position()
     this.content = []; // array of content elements to display onclick;
 
     this.el.css('position', 'absolute');
-
+    if (this.backgroundImage != undefined) {
+    //  console.log('instantiate', this)
+      this.el.css("background-image","url(" + this.backgroundImage +')')
+    }
     var thisnode = this;
 
     this.el.draggable({
@@ -2323,12 +2426,25 @@ mindmap_position = jQuery('#mindmap').position()
       //create drawing area
       var canvas_x = mindmap_position.left//+(mindmap_width/2)
       var canvas_y = mindmap_position.top
-      console.log("canvas",canvas_x, canvas_y, options.mapArea)
-    
+
+      console.log("canvas",this.canvas, canvas_x, canvas_y, options.mapArea)
+
+
+    console.log('this before', this)
+    if(mindmapCanvas != null){
+      mindmapCanvas.clear();
+      jQuery("body svg").last().remove();
+      }
       this.canvas = Raphael(canvas_x, canvas_y, options.mapArea.x, options.mapArea.y);
+      mindmapCanvas = this.canvas
+
+console.log('this ater', this)
+      mindmapNodes = this
      // console.log(options.mapArea,this.canvas)
       // Add a class to the object, so that styles can be applied
       jQuery(this).addClass('js-mindmap-active');
+      
+
 
       // Add keyboard support (thanks to wadefs)
       jQuery(this).keyup(function(event) {
@@ -2417,22 +2533,39 @@ function setPostNodes(related_posts){
 }
 
 
+function getNodeBackgroundImage(notch){
+  console.log(notch)
+ 
+    if(notch.object == 'category'){
+      if(categories[notch.object_id].image != undefined){
+        return bg_path = categories[notch.object_id].image
+      }
+    } 
+
+    
+}
+  
+
+
 function setMindMapNotch(notch) {
-  var mindmapData = {},
+ 
+ var mindmapData = {},
   id = notch.object_id,
-  nav_type = notch.object
+  type = notch.object,
+  backgroundImage = getNodeBackgroundImage(notch);
+
 
   mindmapData.root = {
-    nav_type : nav_type,
+    type : type,
     id: id,
     title: notch.title,
     href: notch.url,
     className:'root-node',
-    backgroundImage : '',
+    backgroundImage : backgroundImage,
     nodes: []
   }
 
-  if (nav_type == "category") {
+  if (type == "category") {
     if (categories[id].posts != undefined) {
       //  console.log("cat", categories[id].posts)
         //categories[id].nodes = setPostNodes(categories[id].posts)
@@ -2451,20 +2584,19 @@ function setMindMapNotch(notch) {
 
 }
 function getNodeImage(this_node){
-  
-      if(this_node.post_media != undefined){
+//    console.log("node_image",this_node)
+    if(this_node.post_media != undefined){
+      
+      if (this_node.post_media._thumbnail_id != undefined) {
         
-        if (this_node.post_media._thumbnail_id != undefined) {
-          
-          if (this_node.post_media._thumbnail_id[0] != undefined) {
-            //console.log("get node image", this_node.title, this_node.post_media._thumbnail_id[0].full_path,this_node)
-            return this_node.post_media._thumbnail_id[0].full_path
+        if (this_node.post_media._thumbnail_id[0] != undefined) {
+          //console.log("get node image", this_node.title, this_node.post_media._thumbnail_id[0].full_path,this_node)
+          return this_node.post_media._thumbnail_id[0].full_path
 
-          }
         }
-
       }
-    
+
+    }
 }
 
 function setGrandChildren(child_node) {
@@ -2485,10 +2617,17 @@ function setGrandChildren(child_node) {
 }
 
 function loadMindmap(target_div, mindmapData) {
+  mindmapCanvas.clear();
   if (initMindMap == false) {
     initMindMap = true
   } else {
-//    jQuery('#mindmap').raphael.remove();
+  
+    console.log("new nodes")
+
+    mindmapNodes.canvas.clear()
+
+
+  
     
 }
   mindmap_width = jQuery(target_div).css("width");
@@ -2496,9 +2635,12 @@ function loadMindmap(target_div, mindmapData) {
  
 
   var create_root = function(){
+    console.log("root",mindmapData.root)
+   var backgroundImage = getNodeImage(mindmapData.root)
     return (jQuery(target_div).addRootNode(mindmapData.root.title, {
       href: '/',
       url: '/',
+//      backgroundImage : getNodeImage(mindmapData.root),
       // size: jQuery(target_div + '>ul>li>a').attr('size'),
       // color: jQuery(target_div + '>ul>li>a').attr('color'),
       onclick: function (node) {
@@ -2538,19 +2680,23 @@ function loadMindmap(target_div, mindmapData) {
             });
           }
         })
-        
-      console.log("mynode",this.mynode)
+        if (child_node.info != undefined) {
+          //addInfoNode(child_node, this.mynode)
+        }
+     // console.log("mynode",this.mynode)
       var grandchildren = setGrandChildren(child_node)
       var current_node = this.mynode
 
+    if(grandchildren.length>0){
       for(g=0;g<grandchildren.length;g++){
+   //     console.log("g", grandchildren[g])
         if(grandchildren[g].id != child_node.id){
          // console.log("grandchild", grandchildren[g].id,child_node.id, this.mynode);
           var backgroundImage = getNodeImage(posts[grandchildren[g].id])
           var href = getNodeImage(posts[grandchildren[g].id])
 
          // console.log('grandbg',backgroundImage)
-          this.mynode = jQuery(target_div).addNode(current_node,
+          this.grandnode = jQuery(target_div).addNode(current_node,
             grandchildren[g].title, {
             //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
            // href: "/",
@@ -2559,51 +2705,75 @@ function loadMindmap(target_div, mindmapData) {
             backgroundImage: backgroundImage,
            /// color: "green",
             onclick: function (node) {
-              //getBehavior('grandchild', posts[grandchildren[g].id])
-              
-              
-              jQuery(node.obj.activeNode.content)
-                .each(function () {
-                  this.hide();
-                });
-              jQuery(node.content).each(function () {
-                this.show();
+               jQuery(node.obj.activeNode.content)
+              .each(function () {
+                this.hide();
               });
+            jQuery(node.content).each(function () {
+              this.show();
+            });
             }
           })
+         
+          if (grandchildren[g].info) {
+            addInfoNode(grandchildren[g], this.grandnode)
+          }
+//console.log('grand', this.mynode, grandchildren[g].id, grandchildren[g].title, grandchildren[g].info)
 
         }
       }
      
       jQuery(this).hide();
       
-        
+    }
 
     //jQuery('>ul>li', this).each(addLI);
   }
-  function getBehavior(level,post){
-    if(post.type == 'resource'){
-      if (post.info != undefined){
-        console.log(post.info,post.info.keys(a).length)
-        return false
-      }
+  function nodeBehavior(this_node, data){
 
-
-    }
-    console.log('click',level,post)
-    return false
   }
-  
+  function addInfoNode(data,this_node){
+        for (vari in data.info) {
+          backgroundImage = ''//getInfoBG(i)
+          this.infonode = jQuery(target_div).addNode(this_node, i, {
+            //          href:jQuery('a:eq(0)',this).text().toLowerCase(), href: "/",
+            size: "/",
+            className: 'info-node',
+            backgroundImage: backgroundImage,
+            /// color: "green",
+            onclick: function (node) {
+              //getBehavior('grandchild', posts[grandchildren[g].id])
+              /*
+              jQuery(node.obj.activeNode.content)
+                .each(function () {
+                  //this.hide();
+                });
+              jQuery(node.content).each(function () {
+               // this.show();
+              });
+              */
+              console.log("external link",i,data.info)
+             openExternalLink(data.info[i])
+            }
+          })
+        }
+      
+  }
 
-
+function openExternalLink(url){
+  window.open(url, "blank");
+  return false;
+}
 
 //console.log('nodes', mindmapData.root.nodes)
 if (mindmapData.root.nodes.length >0){ // intializes nod build.
   
+ 
+  jQuery(target_div).html('') // empties the contatiner div\
 
-  
-  jQuery(target_div).html('') // empties the contatiner div
-var  root = create_root();// runs the root creation function based on variables passed in.
+
+
+  var  root = create_root();// runs the root creation function based on variables passed in.
 //console.log('htmlroot', root);
   for (n=0; n<mindmapData.root.nodes.length;n++){
     addLI(mindmapData.root.nodes[n], root)// loops through the first nodes
@@ -3555,6 +3725,99 @@ function setSocial() {
     // console.log("s",menu_items)
     jQuery('#social-links ul').html(menu_items)
 }
+jQuery('#stargate')
+    .click(function () {
+
+        jQuery('.iris').toggleClass('irison');
+        jQuery('#egypts').toggleClass('egyptsanim');
+        jQuery('audio')[0].play();
+        if (jQuery('.iris').hasClass('irison')) {
+            jQuery('audio')[1].loop = true;
+            jQuery('audio')[1].play();
+        } else {
+            jQuery('audio')[1].loop = false;
+            jQuery('audio')[1].pause();
+            jQuery('audio')[1].currentTime = 0;
+
+        }
+    });
+
+var container,
+    renderer,
+    scene,
+    camera,
+    mesh,
+    start = Date.now(),
+    fov = 30;
+
+var clock = new THREE.Clock();
+
+var timeUniform = {
+    iGlobalTime: {
+        type: 'f',
+        value: 0.1
+    },
+    iResolution: {
+        type: 'v2',
+        value: new THREE.Vector2()
+    }
+};
+
+timeUniform.iResolution.value.x = window.innerWidth / 4;
+timeUniform.iResolution.value.y = window.innerHeight / 4;
+
+window.addEventListener('load', function () {
+    container = document.getElementById('render');
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.x = 20;
+    camera.position.y = 10;
+    camera.position.z = 20;
+    camera.lookAt(scene.position);
+    scene.add(camera);
+
+    var axis = new THREE.AxisHelper(10);
+    scene.add(axis);
+
+    material = new THREE.ShaderMaterial({
+        uniforms: timeUniform,
+        vertexShader: document
+            .getElementById('vertex-shader')
+            .textContent,
+        fragmentShader: document
+            .getElementById('fragment-shader')
+            .textContent
+    });
+
+    var water = new THREE.Mesh(new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight, 40), material);
+    scene.add(water);
+
+    var geometry = new THREE.SphereGeometry(10, 32, 32);
+    var material = new THREE.MeshBasicMaterial({color: 0xffff00});
+    var sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    container.appendChild(renderer.domElement);
+
+    render();
+});
+
+window.addEventListener('resize', function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function render() {
+    timeUniform.iGlobalTime.value += clock.getDelta();
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+}
+
 // Declare three.js variables
 var camera, scene, renderer, stars = []
 
@@ -3702,7 +3965,7 @@ function setCategories(data) {
       categories[data[i].id] = data[i];
     }
   }
-  // console.log('categories', categories)
+  console.log('categories', categories)
 
   return data;
 }
@@ -3715,7 +3978,7 @@ function setTaxonomy(data, tax) {
       taxonomies[tax][data[tax][i].id] = data[tax][i];
     }
   }
-  // console.log(tax, taxonomies[tax])
+  //console.log(tax, taxonomies[tax])
 
   return data;
 }

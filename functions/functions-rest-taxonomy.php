@@ -447,6 +447,39 @@ function register_posts_by_category() {
 	);
 }
 
+/*
+	THIS REQUIRES THE CATEGORY IMAGES PLUGIN
+*/
+
+add_action( 'rest_api_init', 'register_category_image' );
+ 
+function register_category_image() { 
+	register_rest_field( 'category', 'image', array(
+		'get_callback' => 'get_category_image',
+		'schema' => null,
+		)
+	);
+}
+
+
+function get_category_image( $object ) {
+	 if (function_exists('z_taxonomy_image_url')){
+		$image_path = z_taxonomy_image_url($object['id']);
+		$upload_path = parse_url($image_path, PHP_URL_SCHEME)."://".parse_url($image_path, PHP_URL_HOST)."/";
+		$file_path = str_replace($upload_path,'',$image_path);
+		$file = basename($file_path);
+		$path = "/".$file_path;
+
+
+			return $path;
+		} else {
+			return "";
+		}
+}
+
+
+
+
  
 
 

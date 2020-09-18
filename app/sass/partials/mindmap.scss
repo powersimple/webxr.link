@@ -1,7 +1,7 @@
 #mindmap{
     height: 61.8vh;
     width: 50vw;
-    left: 55vw;
+    left: 50vw;
     position: absolute;
     top: 50px;
     
@@ -43,8 +43,8 @@
         text-decoration: none;
        
         border: 2px solid #2a85d8;
-        width: 5vh;
-        height: 5vh;
+        width: 7vh;
+        height: 7vh;
         -webkit-border-radius: 50%;
         border-radius: 50%;
         position: relative;
@@ -76,8 +76,8 @@
     .js-mindmap-active .node.active {
         font-size: 1.5em;
         text-transform: uppercase;
-        width: 10vh;
-        height: 10vh;
+        width: 12vh;
+        height: 12vh;
         font-weight: bold;
         padding: 8px !important;
         border-width: 4px !important;
@@ -85,7 +85,7 @@
         div {
             position: absolute;
                 top: 110%;
-                font-size: 80%;
+                font-size: 60%;
                 left: -2vw;
         }
     }

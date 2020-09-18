@@ -378,7 +378,7 @@ function get_post_tags($object){
 		
     function get_profile_info( $object ) {
         $post_id = $object['id'];
-        $fields = "url,company,solution_name, unique_value_proposition,tagline,use_cases,max_spectators,max_collaborators,demo_video,video_embed_code,url, description,email,facebook,flickr,GitHub,google_plus,instagram,linkedin,location,medium,pinterest,rss,skype,slack,telegram,Tumblr,twitter,vimeo,website,wikipedia,youtube,acronym,name,apply_url,blog_url,conference_url,contact_url,events_url,jobs_url,logo_svgtag,logo_url";
+        $fields = "url,company,solution_name, unique_value_proposition,tagline,use_cases,max_spectators,max_collaborators,demo_video,video_embed_code,url, description,email,facebook,mdn,flickr,github,google_plus,instagram,linkedin,location,medium,pinterest,rss,skype,slack,telegram,Tumblr,twitter,vimeo,website,wikipedia,youtube,acronym,name,apply_url,blog_url,conference_url,contact_url,events_url,jobs_url,logo_svgtag,logo_url";
 
         $profile_info = array();
 

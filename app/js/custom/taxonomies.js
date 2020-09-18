@@ -16,7 +16,7 @@ function setCategories(data) {
       categories[data[i].id] = data[i];
     }
   }
-  // console.log('categories', categories)
+  console.log('categories', categories)
 
   return data;
 }
@@ -29,7 +29,7 @@ function setTaxonomy(data, tax) {
       taxonomies[tax][data[tax][i].id] = data[tax][i];
     }
   }
-  // console.log(tax, taxonomies[tax])
+  //console.log(tax, taxonomies[tax])
 
   return data;
 }

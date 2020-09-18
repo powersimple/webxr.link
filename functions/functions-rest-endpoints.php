@@ -72,7 +72,7 @@ $GLOBALS['REST_CONFIG'] =array(//An array of url arguments
             //"person"=>"fields=id,type,title,content,slug,excerpt,languages,project_info,featured_media,screen_images,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter'],
             //"sponsor"=>"fields=id,type,title,content,slug,excerpt,languages,project_info,featured_media,screen_images,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter'],
             //"social"=>"fields=id,type,title,content,slug,excerpt,featured_media,social_url&".$GLOBALS['REST_post_filter'],
-            "categories"=>"fields=id,name,count,slug,description,parent,posts,profiles,resources,hardware,children&".$GLOBALS['REST_tax_filter'],
+            "categories"=>"fields=id,name,count,slug,description,parent,posts,image,profiles,resources,hardware,children&".$GLOBALS['REST_tax_filter'],
            // "feature"=>"fields=id,name,count,slug,description,posts,children&".$GLOBALS['REST_tax_filter'],
            // "collaboration_type"=>"fields=id,name,count,slug,description,posts,children&".$GLOBALS['REST_tax_filter'],
             //"platform"=>"fields=id,name,count,slug,description,posts,children&".$GLOBALS['REST_tax_filter'],

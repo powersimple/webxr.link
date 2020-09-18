@@ -33,11 +33,17 @@
     height:70px;
 }
 
+// bootstrap overrides
 .navbar-brand {
     width: 100%;
     margin-top: -18px;
     transition: all 2s ease-in-out 0s;
     transform: translate(0px, 0vh) scale(1);
+    float:none;
+    padding:0px !important;
+    >img{
+        display:inherit;
+    }
 }
 
 .nav-bar-nav {
