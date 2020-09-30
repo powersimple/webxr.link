@@ -23,6 +23,43 @@
 
 }
 
+
+#screen.horizontal {
+    #bg-video video {
+        height: 61vh;
+        left: 50%;
+        top: 50%;
+        margin-left: -30.5vh;
+        margin-top: -30.5vh;
+    }
+    #screen-image-wrap {
+           width: 20vh;
+        height: 20vh;
+        left: 50%;
+        top: 50%;
+        margin-left: -10vh;
+        margin-top: -10vh;
+    }
+}
+
+#screen.vertical {
+    #bg-video video {
+        height: 61vw;
+        left: 50%;
+        top: 50%;
+        margin-left: -30.5vw;
+        margin-top: -30.5vw;
+    }
+    #screen-image-wrap {
+        width: 58vw;
+        height: 58vw;
+        left: 50%;
+        top: 50%;
+        margin-left: -29vw;
+        margin-top: -29vw;
+    }
+}
+
 #screen, #screen.horizontal, #stargate{
     transition: transform 1s;
     border:0px solid #0f0;

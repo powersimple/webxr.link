@@ -96,41 +96,6 @@ h1, h2, h3{
     }
 }
 
-#screen.horizontal {
-    #bg-video video {
-        height: 61vh;
-        left: 50%;
-        top: 50%;
-        margin-left: -30.5vh;
-        margin-top: -30.5vh;
-    }
-    #screen-image-wrap {
-        width: 58vh;
-        height: 58vh;
-        left: 50%;
-        top: 50%;
-        margin-left: -29vh;
-        margin-top: -29vh;
-    }
-}
-
-#screen.vertical {
-    #bg-video video {
-        height: 61vw;
-        left: 50%;
-        top: 50%;
-        margin-left: -30.5vw;
-        margin-top: -30.5vw;
-    }
-    #screen-image-wrap {
-        width: 58vw;
-        height: 58vw;
-        left: 50%;
-        top: 50%;
-        margin-left: -29vw;
-        margin-top: -29vw;
-    }
-}
 
 .video-wrapper {
     position: relative;

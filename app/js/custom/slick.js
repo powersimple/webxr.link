@@ -26,14 +26,14 @@ function setSlideShow(menu) {
   //console.log("set slideshow")
 }
 
-function setSlide(slide, id) {
+function setSlide(slide, object, id) {
   /*
     these carousel slides are created here, but their content is populated dynamically
     because it was unreliable populating the content in a loop
     see setSlideContent in app.js
     */
   slide =
-    '\n<div><div id="slide' + id + '" data-id="' + id + '" class="slide-wrap">';
+    '\n<div><div id="slide-' + object + '-' + id + '" data-id="'+object+'-' + id + '" class="slide-wrap">';
   slide += '\n\t<h2></h2>';
   slide += '\n\t<div class="img-wrap"></div>';
   slide += '\n\t<section><div class="content"></div></section>';
@@ -43,6 +43,8 @@ function setSlide(slide, id) {
 
 function setSlides(m) {
   var id = '0';
+  var object = 'page';
+
   var content = '';
   var title = '';
   var slides = '';
@@ -54,10 +56,12 @@ function setSlides(m) {
   } else {
     //  console.log("menus", m, menus[m])
     for (i = 0; menus[m].linear_nav[i]; i++) {
-      //console.log("slides", menus[m].linear_nav[i])
+     // console.log("slides", menus[m].linear_nav[i])
+      object = menus[m].linear_nav[i].object 
       id = menus[m].linear_nav[i].object_id.toString();
+      
 
-      slides += setSlide(i, id);
+      slides += setSlide(i, object,id);
     }
     //console.log("slides rendered",slides)
 

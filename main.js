@@ -25,6 +25,10 @@ var increment = 'vw',
   _w = jQuery(window).width(),
   _h = jQuery(window).height(),
   aspect = _w / _h,
+  current_slide_id = '',
+  curent_slide_title = '',
+  curent_slide_content = '',
+  curent_slide_image = '',
   current_notch = 0;
 var wheel_nav_params = {};
 jQuery(document).ready(function() {
@@ -445,20 +449,57 @@ function calibrateCircle(id, size, increment) {
         }
     }
 
-function setSlideContent(slide, id) {
-    //console.log("setSlideContent", slide, id )
-    if (posts[id] != undefined) {
-        var title_length = posts[id].title.length,
-        content_length = posts[id].content.length
+function setSlideContent(slide, id,object) {
+  console.log("setSlideContents", slide, id, object)
+   
+      
         
-        jQuery("#slide" + id + " h2").html(posts[id].title)
+        
      //   console.log("title="+title_length,"content"+content_length)
 
-      jQuery("#slide" + id + " section div.content").html(posts[id].content)
+      
+    if (object == 'category'){
+      console.log("cat", slide, id, object)
+        if (categories[id] != undefined) {
+          
+          console.log("category", slide, id, object, categories[id])
+          jQuery("#slide-" + object + "-" + id + " h2").html(categories[id].name)
+          jQuery("#slide-" + object + "-" + id + " section div.content").html(categories[id].description)
+      
+        }
+      } else {
+        if (posts[id] != undefined) {
+          console.log("post", id, posts[id])
+          var title_length = posts[id].title.length,
+            content_length = posts[id].content.length
+          current_slide_id = '#slide-' + object + "-" + id
+          current_slide_title = posts[id].title
+          current_slide_content = posts[id].content
+         
+
+          jQuery("#slide-" + object + "-" + id + " h2").html(current_slide_title)
+          jQuery("#slide-" + object + "-" + id + " section div.content").html(current_slide_content)
+          if(posts[id].featured_media != 0){
+            
+              curent_slide_image = media_assets[posts[id].featured_media].full_path
+            if (curent_slide_image != ''){
+              jQuery('#screen-image-container').html('<img src="' + curent_slide_image+'">')
+
+            }
+
+
+          }
+
+
+
+
+        }
+      }
+ 
+ 
+ 
       $carousel.slick('slickGoTo', slide);
-    } else {
-      //console.log("post undefined", slide, id, posts)
-    }
+    
   }
   
   
@@ -491,7 +532,9 @@ function setSlideContent(slide, id) {
   
   
   function setContent(dest, object_id, object) {
-    state.slide = posts_nav[object_id] //
+    state.slide = posts_nav[object_id]
+    state.object = posts_nav[object]
+
     state.object_id = posts_nav[object_id]
    
 
@@ -529,7 +572,7 @@ function setSlideContent(slide, id) {
   
     }
   
-    setSlideContent(dest, object_id)
+    setSlideContent(dest, object_id, object)
   
     /*
           for category wheels
@@ -1051,7 +1094,8 @@ var posts = {},
   data_loaded = false,
   profile_posts = {},
   hardware_posts = {},
-  resource_posts={};
+  resource_posts={},
+  media_assets = {};
 
 state.featured = {
   transition: {
@@ -1155,6 +1199,11 @@ function setData(data) {
 
   setTags(data.tags);
   setMenus(data.menus);
+
+  for (var m = 0; m < data.media.length; m++) {
+    media_assets[data.media[m].id] = data.media[m].data
+  }
+  console.log(media_assets)
   //  setMedia(data.media) media embeded into posts
   initSite();
   data_loaded = true;
@@ -1908,6 +1957,13 @@ mindmap_position = jQuery('#mindmap').position()
     if (opts.backgroundImage) {
       this.backgroundImage =  opts.backgroundImage;
     }
+    if (opts.type) {
+      this.type= opts.type;
+    }
+    if (opts.id) {
+      this.id = opts.id;
+    }
+
     // else { this.size = "100px"; }
 
     // create the element for display
@@ -1991,6 +2047,24 @@ mindmap_position = jQuery('#mindmap').position()
       obj.root.animateToStatic();
       return false;
     });
+    this.el.mouseover(function () {
+     
+      if (typeof opts.onmouseover === 'function') {
+        opts.onmouseover(thisnode);
+      }
+    
+      return false;
+    });
+    this.el.mouseout(function () {
+  
+
+      if (typeof opts.onmouseover === 'function') {
+        opts.onmouseout(thisnode);
+      }
+
+      return false;
+    });
+
   };
 
   // ROOT NODE ONLY:  control animation loop
@@ -2564,8 +2638,11 @@ function setMindMapNotch(notch) {
     backgroundImage : backgroundImage,
     nodes: []
   }
+  console.log("notch",notch)
+  console.log("posts", posts)
 
   if (type == "category") {
+
     if (categories[id].posts != undefined) {
       //  console.log("cat", categories[id].posts)
         //categories[id].nodes = setPostNodes(categories[id].posts)
@@ -2577,6 +2654,8 @@ function setMindMapNotch(notch) {
         }
     }
 
+  } else {
+  //  mindmapData.root.nodes.push(posts[categories[id].posts[c]])
   }
 
 
@@ -2584,19 +2663,28 @@ function setMindMapNotch(notch) {
 
 }
 function getNodeImage(this_node){
-//    console.log("node_image",this_node)
-    if(this_node.post_media != undefined){
-      
-      if (this_node.post_media._thumbnail_id != undefined) {
+  if(this_node != undefined){
+    console.log("node_image",this_node)
+      if(this_node.type == "category"){
         
-        if (this_node.post_media._thumbnail_id[0] != undefined) {
-          //console.log("get node image", this_node.title, this_node.post_media._thumbnail_id[0].full_path,this_node)
-          return this_node.post_media._thumbnail_id[0].full_path
+        return this_node.backgroundImage
 
+      } else {
+
+          if(this_node.post_media != undefined){
+            
+            if (this_node.post_media._thumbnail_id != undefined) {
+              
+              if (this_node.post_media._thumbnail_id[0] != undefined) {
+                //console.log("get node image", this_node.title, this_node.post_media._thumbnail_id[0].full_path,this_node)
+                return this_node.post_media._thumbnail_id[0].full_path
+
+              }
+            }
+
+          }
         }
-      }
-
-    }
+  }
 }
 
 function setGrandChildren(child_node) {
@@ -2637,9 +2725,13 @@ function loadMindmap(target_div, mindmapData) {
   var create_root = function(){
     console.log("root",mindmapData.root)
    var backgroundImage = getNodeImage(mindmapData.root)
+
     return (jQuery(target_div).addRootNode(mindmapData.root.title, {
       href: '/',
       url: '/',
+      id: mindmapData.root.id,
+      type: mindmapData.root.type,
+      backgroundImage: backgroundImage,
 //      backgroundImage : getNodeImage(mindmapData.root),
       // size: jQuery(target_div + '>ul>li>a').attr('size'),
       // color: jQuery(target_div + '>ul>li>a').attr('color'),
@@ -2648,7 +2740,13 @@ function loadMindmap(target_div, mindmapData) {
           .each(function () {
             this.hide();
           });
-      }
+      },onmouseover: function (node) {
+              setItem(node)
+            },
+          onmouseout: function (node) {
+              //clearItem()
+            }
+
     }))
   }
 
@@ -2656,9 +2754,9 @@ function loadMindmap(target_div, mindmapData) {
 
     
    
-    
+    console.log('addLI', parent_node , child_node)
       var backgroundImage = getNodeImage(child_node)
- //  console.log('bg',backgroundImage, child_node)
+     console.log('bg',backgroundImage, child_node)
     // var parentnode = jQuery(this)
         parentnode = root;
       
@@ -2667,9 +2765,12 @@ function loadMindmap(target_div, mindmapData) {
           //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
           href: "/",
           size: "/",
+            id: child_node.id,
+
           //color: "red",
           className : 'child-node',
           backgroundImage: backgroundImage,
+          type: child_node.type,
           onclick: function (node) {
             jQuery(node.obj.activeNode.content)
               .each(function () {
@@ -2678,8 +2779,15 @@ function loadMindmap(target_div, mindmapData) {
             jQuery(node.content).each(function () {
               this.show();
             });
-          }
-        })
+          },
+          onmouseover: function (node) {
+              setItem(node)
+            },
+          onmouseout: function (node) {
+             // clearItem()
+            }
+
+          })
         if (child_node.info != undefined) {
           //addInfoNode(child_node, this.mynode)
         }
@@ -2702,6 +2810,7 @@ function loadMindmap(target_div, mindmapData) {
            // href: "/",
             size: "/",
             className: 'grandchild-node',
+              type: grandchildren[g].object,
             backgroundImage: backgroundImage,
            /// color: "green",
             onclick: function (node) {
@@ -2709,11 +2818,20 @@ function loadMindmap(target_div, mindmapData) {
               .each(function () {
                 this.hide();
               });
-            jQuery(node.content).each(function () {
-              this.show();
-            });
-            }
+             
+
+              jQuery(node.content).each(function () {
+                this.show();
+              });
+            },
+              onmouseover: function (node) {
+                setItem(node)
+              },
+              onmouseout: function (node) {
+               // clearItem()
+              },
           })
+
          
           if (grandchildren[g].info) {
             addInfoNode(grandchildren[g], this.grandnode)
@@ -2732,6 +2850,36 @@ function loadMindmap(target_div, mindmapData) {
   function nodeBehavior(this_node, data){
 
   }
+  function setItem(node){
+    console.log('set', current_slide_id,node)
+    if(node.backgroundImage != ''){
+      jQuery('#screen-image-container').html('<img src="' + node.backgroundImage  + '">')
+    }
+
+
+
+    
+    if(node.type == 'category'){
+      jQuery(current_slide_id + " h2").html(node.name)
+      jQuery(current_slide_id + " section div.content").html(categories[node.id].description)
+    } else {
+      console.log("post",node.id, node.name)
+      jQuery(current_slide_id + " h2").html(node.name)
+      jQuery(current_slide_id + " section div.content").html(posts[node.id].content)
+      
+    
+    }
+
+  }
+  function clearItem() {
+    console.log(current_slide_id)
+    jQuery(current_slide_id + " h2").html(curent_slide_title)
+    jQuery(current_slide_id + " section div.content").html(current_slide_content)
+    jQuery('#screen-image-container').html('<img src="' + curent_slide_image+'">')
+
+    }
+
+
   function addInfoNode(data,this_node){
         for (vari in data.info) {
           backgroundImage = ''//getInfoBG(i)
@@ -3521,14 +3669,14 @@ function setSlideShow(menu) {
   //console.log("set slideshow")
 }
 
-function setSlide(slide, id) {
+function setSlide(slide, object, id) {
   /*
     these carousel slides are created here, but their content is populated dynamically
     because it was unreliable populating the content in a loop
     see setSlideContent in app.js
     */
   slide =
-    '\n<div><div id="slide' + id + '" data-id="' + id + '" class="slide-wrap">';
+    '\n<div><div id="slide-' + object + '-' + id + '" data-id="'+object+'-' + id + '" class="slide-wrap">';
   slide += '\n\t<h2></h2>';
   slide += '\n\t<div class="img-wrap"></div>';
   slide += '\n\t<section><div class="content"></div></section>';
@@ -3538,6 +3686,8 @@ function setSlide(slide, id) {
 
 function setSlides(m) {
   var id = '0';
+  var object = 'page';
+
   var content = '';
   var title = '';
   var slides = '';
@@ -3549,10 +3699,12 @@ function setSlides(m) {
   } else {
     //  console.log("menus", m, menus[m])
     for (i = 0; menus[m].linear_nav[i]; i++) {
-      //console.log("slides", menus[m].linear_nav[i])
+     // console.log("slides", menus[m].linear_nav[i])
+      object = menus[m].linear_nav[i].object 
       id = menus[m].linear_nav[i].object_id.toString();
+      
 
-      slides += setSlide(i, id);
+      slides += setSlide(i, object,id);
     }
     //console.log("slides rendered",slides)
 
@@ -3694,7 +3846,7 @@ function setSliderNotch(notch) {
      //console.log("stop delay", state.circle_delay)
   }
   
-//   console.log("notch", menus[m].data_nav[notch], notch, getSlug(menus[m].data_nav[notch]))
+ //  console.log("notch",m, menus[m].data_nav[notch], notch, getSlug(menus[m].data_nav[notch]))
  
   
   location.hash = getSlug(menus[m].data_nav[notch])
@@ -3705,7 +3857,7 @@ function setSliderNotch(notch) {
   if (menus['wheel-menu'].linear_nav[notch] != undefined) {
 
     setContent(notch, menus[m].data_nav[notch].object_id, menus[m].data_nav[notch].object)
-   // console.log("trigger notch=", notch, location.hash)
+    console.log("trigger notch=", notch, location.hash)
     triggerWheelNav(notch)
     //selectNavItem(notch);
   }

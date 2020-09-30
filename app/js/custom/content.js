@@ -1,17 +1,54 @@
-function setSlideContent(slide, id) {
-    //console.log("setSlideContent", slide, id )
-    if (posts[id] != undefined) {
-        var title_length = posts[id].title.length,
-        content_length = posts[id].content.length
+function setSlideContent(slide, id,object) {
+  console.log("setSlideContents", slide, id, object)
+   
+      
         
-        jQuery("#slide" + id + " h2").html(posts[id].title)
+        
      //   console.log("title="+title_length,"content"+content_length)
 
-      jQuery("#slide" + id + " section div.content").html(posts[id].content)
+      
+    if (object == 'category'){
+      console.log("cat", slide, id, object)
+        if (categories[id] != undefined) {
+          
+          console.log("category", slide, id, object, categories[id])
+          jQuery("#slide-" + object + "-" + id + " h2").html(categories[id].name)
+          jQuery("#slide-" + object + "-" + id + " section div.content").html(categories[id].description)
+      
+        }
+      } else {
+        if (posts[id] != undefined) {
+          console.log("post", id, posts[id])
+          var title_length = posts[id].title.length,
+            content_length = posts[id].content.length
+          current_slide_id = '#slide-' + object + "-" + id
+          current_slide_title = posts[id].title
+          current_slide_content = posts[id].content
+         
+
+          jQuery("#slide-" + object + "-" + id + " h2").html(current_slide_title)
+          jQuery("#slide-" + object + "-" + id + " section div.content").html(current_slide_content)
+          if(posts[id].featured_media != 0){
+            
+              curent_slide_image = media_assets[posts[id].featured_media].full_path
+            if (curent_slide_image != ''){
+              jQuery('#screen-image-container').html('<img src="' + curent_slide_image+'">')
+
+            }
+
+
+          }
+
+
+
+
+        }
+      }
+ 
+ 
+ 
       $carousel.slick('slickGoTo', slide);
-    } else {
-      //console.log("post undefined", slide, id, posts)
-    }
+    
   }
   
   
@@ -44,7 +81,9 @@ function setSlideContent(slide, id) {
   
   
   function setContent(dest, object_id, object) {
-    state.slide = posts_nav[object_id] //
+    state.slide = posts_nav[object_id]
+    state.object = posts_nav[object]
+
     state.object_id = posts_nav[object_id]
    
 
@@ -82,7 +121,7 @@ function setSlideContent(slide, id) {
   
     }
   
-    setSlideContent(dest, object_id)
+    setSlideContent(dest, object_id, object)
   
     /*
           for category wheels

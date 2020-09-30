@@ -25,6 +25,10 @@ var increment = 'vw',
   _w = jQuery(window).width(),
   _h = jQuery(window).height(),
   aspect = _w / _h,
+  current_slide_id = '',
+  curent_slide_title = '',
+  curent_slide_content = '',
+  curent_slide_image = '',
   current_notch = 0;
 var wheel_nav_params = {};
 jQuery(document).ready(function() {

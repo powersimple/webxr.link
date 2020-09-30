@@ -36,9 +36,9 @@ function iterateEndpoint($field,$name,$query){
 
         }
 
-            
+       
         if((count($q)/100) > floor(count($q)/100)){
-                        //print   $iterations = count($q);
+                        $iterations = count($q);
              $iterations = floor((count($q)/100))+1;
             
 
@@ -46,14 +46,14 @@ function iterateEndpoint($field,$name,$query){
         } else {
             $iterations = 1;
         }
-
+// print     $iterations;
        
 
         for($i=1;$i<=$iterations;$i++){
              
            array_push($endpoint_array,$query."&page=$i");
         }    
-       // var_dump($endpoint_array);
+  //     var_dump($endpoint_array);
         //die();
             return $endpoint_array;
         
@@ -66,7 +66,7 @@ $GLOBALS['REST_CONFIG'] =array(//An array of url arguments
         //    "profile"=>"fields=id,type,title,content,slug,excerpt,post_media,languages,info,seo,featured_media,screen_images,featured_video,type,industry,support_hardware,feature,thumbnail_url,collaboration_type,platform,cats,tags&".$GLOBALS['REST_post_filter'],
          "profile"=>iterateEndpoint('post_type','profile',"fields=id,type,title,content,slug,excerpt,post_media,languages,info,seo,featured_media,screen_images,featured_video,type,related,support_hardware,feature,thumbnail_url,collaboration_type,platform,cats,tags&".$GLOBALS['REST_post_filter_name_sort']),
             "hardware"=>"fields=id,type,title,content,slug,excerpt,posts,post_media,languages,info,seo,profiles,resources,related,featured_media,screen_images,featured_video,type,industry,feature,thumbnail_url,platform,cats,tags&".$GLOBALS['REST_post_filter'],   
-            "resource"=>"fields=id,type,title,content,slug,excerpt,languages,info,related,featured_media,screen_images,post_media,related,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter'],
+            "resource"=>iterateEndpoint('post_type','resource',"fields=id,type,title,content,slug,excerpt,languages,info,related,featured_media,screen_images,post_media,related,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter']),
            // "event"=>"fields=id,type,title,content,slug,excerpt,languages,project_info,featured_media,screen_images,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter'],
             //"product"=>"fields=id,type,title,content,slug,excerpt,languages,project_info,featured_media,screen_images,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter'],
             //"person"=>"fields=id,type,title,content,slug,excerpt,languages,project_info,featured_media,screen_images,featured_video,type,cats,tags&".$GLOBALS['REST_post_filter'],

@@ -7,20 +7,21 @@
     width:80vw;
     height:20px;
     left:10%;
-    bottom:0px;
+    bottom:1vh;
     .arrow {
         position: absolute;
         width: 4vh;
         opacity: 0.5;
         height: 4vh;
         cursor: pointer;
+        
     }
     #up-arrow {
-        top: 0;
+        top: -2vh;
         transform: rotate(-90deg);
     }
     #down-arrow {
-        bottom: 0;
+        bottom: 2vh;
         transform: rotate(90deg);
         
     }
@@ -28,14 +29,14 @@
             width: 10px;
             margin-left:-1vw;
             height:30px;
-            margin-top:-0.75vh;
+            margin-top:-1vh;
         }
 
 }
 #screen.horizontal.maxed{
     #slider-wrap {
         right:0;
-        height:61.8vh;
+        height:30vh;
        
     }
 }
@@ -123,14 +124,14 @@ key-fill,
     }
     #up-arrow {
         right: -5vw;
-        top:-1vh;
+        top:-2vh;
         transform: rotate(0deg);
     }
     #down-arrow {
         left: -5vw;
         transform: rotate(180deg);
        
-        top: -1vh;
+        top: -2vh;
             
     }
 }

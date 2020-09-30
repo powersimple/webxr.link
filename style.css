@@ -173,7 +173,8 @@ header {
   position: absolute;
   width: 100%;
   height: 50px;
-  transition: transform 1s; }
+  transition: transform 1s;
+  z-index: 100; }
   header #logo {
     width: 400px;
     z-index: 2;
@@ -531,36 +532,6 @@ h1, h2, h3 {
   overflow: hidden;
   height: 99%;
   opacity: 0.9; }
-
-#screen.horizontal #bg-video video {
-  height: 61vh;
-  left: 50%;
-  top: 50%;
-  margin-left: -30.5vh;
-  margin-top: -30.5vh; }
-
-#screen.horizontal #screen-image-wrap {
-  width: 58vh;
-  height: 58vh;
-  left: 50%;
-  top: 50%;
-  margin-left: -29vh;
-  margin-top: -29vh; }
-
-#screen.vertical #bg-video video {
-  height: 61vw;
-  left: 50%;
-  top: 50%;
-  margin-left: -30.5vw;
-  margin-top: -30.5vw; }
-
-#screen.vertical #screen-image-wrap {
-  width: 58vw;
-  height: 58vw;
-  left: 50%;
-  top: 50%;
-  margin-left: -29vw;
-  margin-top: -29vw; }
 
 .video-wrapper {
   position: relative;
@@ -1623,6 +1594,36 @@ h1, h2, h3 {
     margin-left: -8.6%;
     top: 105%; }
 
+#screen.horizontal #bg-video video {
+  height: 61vh;
+  left: 50%;
+  top: 50%;
+  margin-left: -30.5vh;
+  margin-top: -30.5vh; }
+
+#screen.horizontal #screen-image-wrap {
+  width: 20vh;
+  height: 20vh;
+  left: 50%;
+  top: 50%;
+  margin-left: -10vh;
+  margin-top: -10vh; }
+
+#screen.vertical #bg-video video {
+  height: 61vw;
+  left: 50%;
+  top: 50%;
+  margin-left: -30.5vw;
+  margin-top: -30.5vw; }
+
+#screen.vertical #screen-image-wrap {
+  width: 58vw;
+  height: 58vw;
+  left: 50%;
+  top: 50%;
+  margin-left: -29vw;
+  margin-top: -29vw; }
+
 #screen, #screen.horizontal, #stargate {
   transition: transform 1s;
   border: 0px solid #0f0;
@@ -1741,7 +1742,7 @@ h1, h2, h3 {
   width: 80vw;
   height: 20px;
   left: 10%;
-  bottom: 0px; }
+  bottom: 1vh; }
   #slider-wrap .arrow {
     position: absolute;
     width: 4vh;
@@ -1749,20 +1750,20 @@ h1, h2, h3 {
     height: 4vh;
     cursor: pointer; }
   #slider-wrap #up-arrow {
-    top: 0;
+    top: -2vh;
     transform: rotate(-90deg); }
   #slider-wrap #down-arrow {
-    bottom: 0;
+    bottom: 2vh;
     transform: rotate(90deg); }
   #slider-wrap .ui-slider-handle {
     width: 10px;
     margin-left: -1vw;
     height: 30px;
-    margin-top: -0.75vh; }
+    margin-top: -1vh; }
 
 #screen.horizontal.maxed #slider-wrap {
   right: 0;
-  height: 61.8vh; }
+  height: 30vh; }
 
 .ui-slider {
   position: relative;
@@ -1808,13 +1809,13 @@ key-fill,
 
 #slider-wrap.horizontal #up-arrow {
   right: -5vw;
-  top: -1vh;
+  top: -2vh;
   transform: rotate(0deg); }
 
 #slider-wrap.horizontal #down-arrow {
   left: -5vw;
   transform: rotate(180deg);
-  top: -1vh; }
+  top: -2vh; }
 
 #slider-wrap.vertical.narrow {
   left: auto; }
@@ -1928,7 +1929,7 @@ key-fill,
   width: 61.8vw;
   height: 40vh;
   left: 50%;
-  top: 60vh; }
+  top: 50vh; }
 
 #screen.vertical .slideshow .slide-wrap {
   height: 50vw; }

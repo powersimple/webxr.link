@@ -27,7 +27,8 @@ var posts = {},
   data_loaded = false,
   profile_posts = {},
   hardware_posts = {},
-  resource_posts={};
+  resource_posts={},
+  media_assets = {};
 
 state.featured = {
   transition: {
@@ -131,6 +132,11 @@ function setData(data) {
 
   setTags(data.tags);
   setMenus(data.menus);
+
+  for (var m = 0; m < data.media.length; m++) {
+    media_assets[data.media[m].id] = data.media[m].data
+  }
+  console.log(media_assets)
   //  setMedia(data.media) media embeded into posts
   initSite();
   data_loaded = true;

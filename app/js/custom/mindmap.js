@@ -89,6 +89,13 @@ mindmap_position = jQuery('#mindmap').position()
     if (opts.backgroundImage) {
       this.backgroundImage =  opts.backgroundImage;
     }
+    if (opts.type) {
+      this.type= opts.type;
+    }
+    if (opts.id) {
+      this.id = opts.id;
+    }
+
     // else { this.size = "100px"; }
 
     // create the element for display
@@ -172,6 +179,24 @@ mindmap_position = jQuery('#mindmap').position()
       obj.root.animateToStatic();
       return false;
     });
+    this.el.mouseover(function () {
+     
+      if (typeof opts.onmouseover === 'function') {
+        opts.onmouseover(thisnode);
+      }
+    
+      return false;
+    });
+    this.el.mouseout(function () {
+  
+
+      if (typeof opts.onmouseover === 'function') {
+        opts.onmouseout(thisnode);
+      }
+
+      return false;
+    });
+
   };
 
   // ROOT NODE ONLY:  control animation loop
@@ -745,8 +770,11 @@ function setMindMapNotch(notch) {
     backgroundImage : backgroundImage,
     nodes: []
   }
+  console.log("notch",notch)
+  console.log("posts", posts)
 
   if (type == "category") {
+
     if (categories[id].posts != undefined) {
       //  console.log("cat", categories[id].posts)
         //categories[id].nodes = setPostNodes(categories[id].posts)
@@ -758,6 +786,8 @@ function setMindMapNotch(notch) {
         }
     }
 
+  } else {
+  //  mindmapData.root.nodes.push(posts[categories[id].posts[c]])
   }
 
 
@@ -765,19 +795,28 @@ function setMindMapNotch(notch) {
 
 }
 function getNodeImage(this_node){
-//    console.log("node_image",this_node)
-    if(this_node.post_media != undefined){
-      
-      if (this_node.post_media._thumbnail_id != undefined) {
+  if(this_node != undefined){
+    console.log("node_image",this_node)
+      if(this_node.type == "category"){
         
-        if (this_node.post_media._thumbnail_id[0] != undefined) {
-          //console.log("get node image", this_node.title, this_node.post_media._thumbnail_id[0].full_path,this_node)
-          return this_node.post_media._thumbnail_id[0].full_path
+        return this_node.backgroundImage
 
+      } else {
+
+          if(this_node.post_media != undefined){
+            
+            if (this_node.post_media._thumbnail_id != undefined) {
+              
+              if (this_node.post_media._thumbnail_id[0] != undefined) {
+                //console.log("get node image", this_node.title, this_node.post_media._thumbnail_id[0].full_path,this_node)
+                return this_node.post_media._thumbnail_id[0].full_path
+
+              }
+            }
+
+          }
         }
-      }
-
-    }
+  }
 }
 
 function setGrandChildren(child_node) {
@@ -818,9 +857,13 @@ function loadMindmap(target_div, mindmapData) {
   var create_root = function(){
     console.log("root",mindmapData.root)
    var backgroundImage = getNodeImage(mindmapData.root)
+
     return (jQuery(target_div).addRootNode(mindmapData.root.title, {
       href: '/',
       url: '/',
+      id: mindmapData.root.id,
+      type: mindmapData.root.type,
+      backgroundImage: backgroundImage,
 //      backgroundImage : getNodeImage(mindmapData.root),
       // size: jQuery(target_div + '>ul>li>a').attr('size'),
       // color: jQuery(target_div + '>ul>li>a').attr('color'),
@@ -829,7 +872,13 @@ function loadMindmap(target_div, mindmapData) {
           .each(function () {
             this.hide();
           });
-      }
+      },onmouseover: function (node) {
+              setItem(node)
+            },
+          onmouseout: function (node) {
+              //clearItem()
+            }
+
     }))
   }
 
@@ -837,9 +886,9 @@ function loadMindmap(target_div, mindmapData) {
 
     
    
-    
+    console.log('addLI', parent_node , child_node)
       var backgroundImage = getNodeImage(child_node)
- //  console.log('bg',backgroundImage, child_node)
+     console.log('bg',backgroundImage, child_node)
     // var parentnode = jQuery(this)
         parentnode = root;
       
@@ -848,9 +897,12 @@ function loadMindmap(target_div, mindmapData) {
           //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
           href: "/",
           size: "/",
+            id: child_node.id,
+
           //color: "red",
           className : 'child-node',
           backgroundImage: backgroundImage,
+          type: child_node.type,
           onclick: function (node) {
             jQuery(node.obj.activeNode.content)
               .each(function () {
@@ -859,8 +911,15 @@ function loadMindmap(target_div, mindmapData) {
             jQuery(node.content).each(function () {
               this.show();
             });
-          }
-        })
+          },
+          onmouseover: function (node) {
+              setItem(node)
+            },
+          onmouseout: function (node) {
+             // clearItem()
+            }
+
+          })
         if (child_node.info != undefined) {
           //addInfoNode(child_node, this.mynode)
         }
@@ -883,6 +942,7 @@ function loadMindmap(target_div, mindmapData) {
            // href: "/",
             size: "/",
             className: 'grandchild-node',
+              type: grandchildren[g].object,
             backgroundImage: backgroundImage,
            /// color: "green",
             onclick: function (node) {
@@ -890,11 +950,20 @@ function loadMindmap(target_div, mindmapData) {
               .each(function () {
                 this.hide();
               });
-            jQuery(node.content).each(function () {
-              this.show();
-            });
-            }
+             
+
+              jQuery(node.content).each(function () {
+                this.show();
+              });
+            },
+              onmouseover: function (node) {
+                setItem(node)
+              },
+              onmouseout: function (node) {
+               // clearItem()
+              },
           })
+
          
           if (grandchildren[g].info) {
             addInfoNode(grandchildren[g], this.grandnode)
@@ -913,6 +982,36 @@ function loadMindmap(target_div, mindmapData) {
   function nodeBehavior(this_node, data){
 
   }
+  function setItem(node){
+    console.log('set', current_slide_id,node)
+    if(node.backgroundImage != ''){
+      jQuery('#screen-image-container').html('<img src="' + node.backgroundImage  + '">')
+    }
+
+
+
+    
+    if(node.type == 'category'){
+      jQuery(current_slide_id + " h2").html(node.name)
+      jQuery(current_slide_id + " section div.content").html(categories[node.id].description)
+    } else {
+      console.log("post",node.id, node.name)
+      jQuery(current_slide_id + " h2").html(node.name)
+      jQuery(current_slide_id + " section div.content").html(posts[node.id].content)
+      
+    
+    }
+
+  }
+  function clearItem() {
+    console.log(current_slide_id)
+    jQuery(current_slide_id + " h2").html(curent_slide_title)
+    jQuery(current_slide_id + " section div.content").html(current_slide_content)
+    jQuery('#screen-image-container').html('<img src="' + curent_slide_image+'">')
+
+    }
+
+
   function addInfoNode(data,this_node){
         for (vari in data.info) {
           backgroundImage = ''//getInfoBG(i)
