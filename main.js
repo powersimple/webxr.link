@@ -2091,8 +2091,11 @@ mindmap_position = jQuery('#mindmap').position()
       len,
       mynode = this;
     this.obj.canvas.clear();
-    for (i = 0, len = this.children.length; i < len; i++) {
+    
+    for (i = 0; i < this.children.length; i++) {
         this.drawLine(this.x, this.y, this.children[i].x, this.children[i].y);
+        //*GABOR
+        this.drawChildrenLine(this.children[i]);
     }
     if (this.findEquilibrium() || this.obj.movementStopped) {
       this.moving = false;
@@ -2378,6 +2381,7 @@ mindmap_position = jQuery('#mindmap').position()
     this.el.remove();
   };
 
+    //*GABOR
     Node.prototype.drawLine = function (startx, starty, endx, endy) {
 
         this.strokeStyle = '#ff0';
@@ -2395,6 +2399,16 @@ mindmap_position = jQuery('#mindmap').position()
             )
             .attr({ stroke: this.strokeStyle, opacity: 1, 'stroke-width': '2px' });
 
+    };
+
+    //*GABOR
+    Node.prototype.drawChildrenLine = function (parent) {
+        for (var j = 0; j < parent.children.length; j++) {
+            if (parent.children[j].visible) {
+                this.drawLine(parent.x, parent.y, parent.children[j].x, parent.children[j].y);
+                this.drawChildrenLine(parent.children[j]);
+            }
+        }
     };
 
   // Define all Line related functions.
