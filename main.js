@@ -2091,8 +2091,8 @@ mindmap_position = jQuery('#mindmap').position()
       len,
       mynode = this;
     this.obj.canvas.clear();
-    for (i = 0, len = this.obj.lines.length; i < len; i++) {
-      this.obj.lines[i].updatePosition();
+    for (i = 0, len = this.children.length; i < len; i++) {
+        this.drawLine(this.x, this.y, this.children[i].x, this.children[i].y);
     }
     if (this.findEquilibrium() || this.obj.movementStopped) {
       this.moving = false;
@@ -2377,6 +2377,25 @@ mindmap_position = jQuery('#mindmap').position()
 
     this.el.remove();
   };
+
+    Node.prototype.drawLine = function (startx, starty, endx, endy) {
+
+        this.strokeStyle = '#ff0';
+
+        this.obj.canvas
+            .path(
+                'M' +
+                startx +
+                ' ' +
+                starty +
+                'L' +
+                endx +
+                ' ' +
+                endy
+            )
+            .attr({ stroke: this.strokeStyle, opacity: 1, 'stroke-width': '2px' });
+
+    };
 
   // Define all Line related functions.
   Line = function(obj, startNode, endNode) {
