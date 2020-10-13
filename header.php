@@ -42,6 +42,7 @@
       active_object = "<?=$post->post_type?>",
       home_page = <?=get_option( 'page_on_front' )?>,
       site_title = "<?=get_bloginfo('name')?>",
+      theme_image_path = "<?=get_stylesheet_directory_uri()?>/images/",
       xr_path = "<?=get_stylesheet_directory_uri()?>/xr/",
       data_path = "<?=get_stylesheet_directory_uri()?>/data/",
       useWheelNav = false,

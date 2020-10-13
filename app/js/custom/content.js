@@ -104,12 +104,13 @@ function setSlideContent(slide, id,object) {
         'featured_media', //the attr of the objectg that we're passing, in this case, this is featured media
         "flip" // the type of effect that awaits
       );
-  
-     
+      var video_path = null;
+      if(posts[object_id].featured_video != undefined){
       var video_path = uploads_path + "" + posts[object_id].featured_video.video_path;
-  
+    
       
       setVideo(posts[object_id].featured_video.video_id,"#bg-video")
+      }
       setRelated(posts[object_id])
       if (posts[object_id].screen_images.length >0){
         

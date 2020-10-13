@@ -1,7 +1,7 @@
 require('dns').lookup(require('os').hostname(), function(err, add, fam) {
   console.log('addr: ' + add);
 });
-var localhost = 'http://spatialcomputing.192.168.1.8.xip.io'; // SET local dev url here
+var localhost = 'http://spatialcomputing.192.168.1.13.xip.io'; // SET local dev url here
 const { gulp, src, dest, watch } = require('gulp'),
   sass = require('gulp-sass'),
   minifyCSS = require('gulp-csso'),

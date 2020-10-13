@@ -1656,7 +1656,8 @@ h1, h2, h3 {
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  position: absolute; }
+  position: absolute;
+  background: #fff; }
   #screen-image-wrap img {
     width: 100%;
     height: auto;
@@ -2181,7 +2182,7 @@ key-fill,
   overflow-y: scroll; }
 
 #mindmap {
-  height: 61.8vh;
+  height: 50vh;
   width: 50vw;
   left: 50vw;
   position: absolute;
@@ -2232,9 +2233,9 @@ key-fill,
   transition: transform 1s; }
   .js-mindmap-active .node div {
     position: absolute;
-    width: 10vw;
-    top: 110%;
-    left: -4vw;
+    width: 9vw;
+    top: 125%;
+    left: -3vw;
     display: table;
     text-shadow: 3px 3px black; }
 
@@ -2259,13 +2260,6 @@ key-fill,
 
 .js-mindmap-active .node.active {
   color: white; }
-
-on
-.js-mindmap-active .node.activeparent {
-  color: lightgray;
-  padding: 8px !important;
-  border-width: 8px !important;
-  background: #c64d44; }
 
 .js-mindmap-active .node span {
   display: table-cell;
@@ -2355,6 +2349,35 @@ on
   width: 225px;
   height: 225px;
   font-size: 2.25em; }
+
+.js-mindmap-active .node div.back {
+  display: none;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: -20px;
+  top: -30px;
+  background-repeat: no-repeat; }
+
+.js-mindmap-active .node div.ext {
+  display: none;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 60px;
+  top: 50px;
+  background-repeat: no-repeat; }
+
+.external div.ext {
+  display: block !important; }
+
+.activeparent {
+  color: lightgray;
+  padding: 8px !important;
+  border-width: 8px !important;
+  background: #c64d44; }
+  .activeparent div.back {
+    display: block !important; }
 
 @keyframes gradient {
   0% {

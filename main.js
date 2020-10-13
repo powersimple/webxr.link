@@ -555,12 +555,13 @@ function setSlideContent(slide, id,object) {
         'featured_media', //the attr of the objectg that we're passing, in this case, this is featured media
         "flip" // the type of effect that awaits
       );
-  
-     
+      var video_path = null;
+      if(posts[object_id].featured_video != undefined){
       var video_path = uploads_path + "" + posts[object_id].featured_video.video_path;
-  
+    
       
       setVideo(posts[object_id].featured_video.video_id,"#bg-video")
+      }
       setRelated(posts[object_id])
       if (posts[object_id].screen_images.length >0){
         
@@ -1942,6 +1943,7 @@ mindmap_position = jQuery('#mindmap').position()
 
     this.name = name;
     this.href = opts.href;
+
     if (opts.url) {
       this.url = opts.url;
     }
@@ -1949,7 +1951,10 @@ mindmap_position = jQuery('#mindmap').position()
       this.color = opts.color;
     }
     if (opts.size) {
-      this.size = 'size' + opts.size;
+      this.size = 'size'+'/';
+    }
+    if (opts.external) {
+      this.size = opts.external;
     }
     if (opts.className) {
       this.className = opts.className;
@@ -1960,6 +1965,9 @@ mindmap_position = jQuery('#mindmap').position()
     if (opts.type) {
       this.type= opts.type;
     }
+    if (opts.external) {
+      this.external = opts.external;
+    }
     if (opts.id) {
       this.id = opts.id;
     }
@@ -1968,21 +1976,26 @@ mindmap_position = jQuery('#mindmap').position()
 
     // create the element for display
     // this.el = jQuery('<a href="' + this.href + '" style="width: ' + this.size + '; height: ' + this.size + ';"><div><span>' + this.name + '</span></div></a>').addClass('node').addClass(this.color);
- 
+    
+
    
     this.el = jQuery(
       '<a rel="" href="' +
         this.href +
-        '"><div><span>' +
+      '"><div class="back" style="background-image:url(' + theme_image_path + 'icons/back-01.svg)"></div><div class="ext" style="background-image:url(' + theme_image_path +'icons/ExternalLink-01.svg)"></div><div><span>' +
         this.name +
         '</span></div></a>'
     )
-
+    
       .addClass('node')
 //      .addClass('node')
 
       .addClass(this.color)
       .addClass(this.size);
+    
+    if (this.external == true) {
+        this.el.addClass('external')
+    }
 
     if (opts.backgroundImage != undefined) {
 
@@ -2091,8 +2104,10 @@ mindmap_position = jQuery('#mindmap').position()
       len,
       mynode = this;
     this.obj.canvas.clear();
+   // console.log("lines", this.obj.lines)
     for (i = 0, len = this.obj.lines.length; i < len; i++) {
-      this.obj.lines[i].updatePosition();
+        
+            this.obj.lines[i].updatePosition();
     }
     if (this.findEquilibrium() || this.obj.movementStopped) {
       this.moving = false;
@@ -2231,7 +2246,7 @@ mindmap_position = jQuery('#mindmap').position()
       fy = 0,
       nodes = this.obj.nodes,
       lines = this.obj.lines;
-
+   
     // Calculate the repulsive force from every other node
     for (i = 0; i < nodes.length; i++) {
       if (nodes[i] === this) {
@@ -2281,6 +2296,7 @@ mindmap_position = jQuery('#mindmap').position()
     fy += Math.max(-2, f);
 
     // for each line, of which I'm a part, add an attractive force.
+
     for (i = 0; i < lines.length; i++) {
       otherend = null;
       if (lines[i].start === this) {
@@ -2352,7 +2368,7 @@ mindmap_position = jQuery('#mindmap').position()
     var i,
       oldnodes = this.obj.nodes,
       oldlines = this.obj.lines;
-
+  
     for (i = 0; i < this.children.length; i++) {
       this.children[i].removeNode();
     }
@@ -2372,6 +2388,7 @@ mindmap_position = jQuery('#mindmap').position()
       } else if (oldlines[i].end === this) {
         continue;
       }
+      console.log("OLD LINES", oldlines[i])
       this.obj.lines.push(oldlines[i]);
     }
 
@@ -2507,11 +2524,11 @@ mindmap_position = jQuery('#mindmap').position()
     console.log('this before', this)
     if(mindmapCanvas != null){
       mindmapCanvas.clear();
-      jQuery("body svg").last().remove();
+     
       }
       this.canvas = Raphael(canvas_x, canvas_y, options.mapArea.x, options.mapArea.y);
       mindmapCanvas = this.canvas
-
+     
 console.log('this ater', this)
       mindmapNodes = this
      // console.log(options.mapArea,this.canvas)
@@ -2664,7 +2681,7 @@ function setMindMapNotch(notch) {
 }
 function getNodeImage(this_node){
   if(this_node != undefined){
-    console.log("node_image",this_node)
+  //  console.log("node_image",this_node)
       if(this_node.type == "category"){
         
         return this_node.backgroundImage
@@ -2705,7 +2722,15 @@ function setGrandChildren(child_node) {
 }
 
 function loadMindmap(target_div, mindmapData) {
-  mindmapCanvas.clear();
+ if(mindmapCanvas != undefined){
+  
+ }
+  jQuery("body svg").last().html('');
+ // mindmapCanvas.canvas.remove()
+ 
+
+   console.log("CANVAS after", mindmapCanvas)
+
   if (initMindMap == false) {
     initMindMap = true
   } else {
@@ -2749,29 +2774,70 @@ function loadMindmap(target_div, mindmapData) {
 
     }))
   }
+  count = [];
+  function externalBGImage(name,value){
+    switch(name){
+      case value = 'url': 
+        return '/wp-content/'
+    }
+
+
+  }
+
+  function getNodeProperties(node){
+    var properties = {}
+   // console.log("node info",node.info)
+    properties.title = node.title,
+    properties.info_count = getCount(node.info)
+    properties.backgroundImage = getNodeImage(node)
+    properties.grandchildren = setGrandChildren(node)
+    properties.className = 'child-node'
+    properties.external = false
+    if (properties.info_count == 1 && properties.grandchildren.length == 0) {
+
+      properties.href = node.info.url
+      properties.external = true
+    } else {
+
+      properties.href = '/'
+
+
+    }
+    return properties
+  }
+
 
   var addLI = function (child_node,parent_node) {
 
+    var info_count = 0,
     
+    href = '/',
+    
+    
+    
+    properties = getNodeProperties(child_node),
+
+
+
    
-    console.log('addLI', parent_node , child_node)
-      var backgroundImage = getNodeImage(child_node)
-     console.log('bg',backgroundImage, child_node)
-    // var parentnode = jQuery(this)
-        parentnode = root;
-      
-      this.mynode = jQuery(target_div).addNode(parent_node, 
-          child_node.title, {
+
+    href = properties.href
+    title = properties.title
+    //title = properties.title+" "+properties.info_count
+       this.mynode = jQuery(target_div).addNode(parent_node, 
+          title, {
           //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
-          href: "/",
-          size: "/",
+          href: href,
+          size: external,
+          external: properties.external,
             id: child_node.id,
 
           //color: "red",
-          className : 'child-node',
-          backgroundImage: backgroundImage,
+          className : properties.className,
+          backgroundImage: properties.backgroundImage,
           type: child_node.type,
           onclick: function (node) {
+            if(href == '/'){
             jQuery(node.obj.activeNode.content)
               .each(function () {
                 this.hide();
@@ -2779,6 +2845,10 @@ function loadMindmap(target_div, mindmapData) {
             jQuery(node.content).each(function () {
               this.show();
             });
+            } else {
+              window.open(href,'_blank')
+              return false
+            }
           },
           onmouseover: function (node) {
               setItem(node)
@@ -2792,37 +2862,48 @@ function loadMindmap(target_div, mindmapData) {
           //addInfoNode(child_node, this.mynode)
         }
      // console.log("mynode",this.mynode)
-      var grandchildren = setGrandChildren(child_node)
+     
       var current_node = this.mynode
-
-    if(grandchildren.length>0){
-      for(g=0;g<grandchildren.length;g++){
+      
+    if(properties.grandchildren.length>0){
+      info_count = 0;
+      for (g = 0; g < properties.grandchildren.length;g++){
    //     console.log("g", grandchildren[g])
-        if(grandchildren[g].id != child_node.id){
-         // console.log("grandchild", grandchildren[g].id,child_node.id, this.mynode);
-          var backgroundImage = getNodeImage(posts[grandchildren[g].id])
-          var href = getNodeImage(posts[grandchildren[g].id])
+        if (properties.grandchildren[g].id != child_node.id){
+  //        var backgroundImage = getNodeImage(posts[grandchildren[g].id])
+   //       var info_count = getCount(grandchildren[g].info);
+          grandprops = getNodeProperties(properties.grandchildren[g], current_node)
 
+         // console.log("grandprops", grandprops)
+       //  console.log("grandprops", grandprops, grandchildren[g].id,child_node.id, this.mynode);
+         
+          title = grandprops.title
+        //  title = grandprops.title + " " + grandprops.info_count
          // console.log('grandbg',backgroundImage)
           this.grandnode = jQuery(target_div).addNode(current_node,
-            grandchildren[g].title, {
+            title, {
             //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
-           // href: "/",
+            href: grandprops.href,
             size: "/",
             className: 'grandchild-node',
-              type: grandchildren[g].object,
-            backgroundImage: backgroundImage,
+              type: grandprops.object,
+              backgroundImage: grandprops.backgroundImage,
            /// color: "green",
             onclick: function (node) {
+              if (href == '/') {
                jQuery(node.obj.activeNode.content)
-              .each(function () {
-                this.hide();
-              });
-             
+                .each(function () {
+                  this.hide();
+                });
+                jQuery(node.content).each(function () {
+                  this.show();
+                });
+              } else {
+                window.open(grandprops.href, '_blank')
+                return false
+              }
 
-              jQuery(node.content).each(function () {
-                this.show();
-              });
+
             },
               onmouseover: function (node) {
                 setItem(node)
@@ -2832,9 +2913,16 @@ function loadMindmap(target_div, mindmapData) {
               },
           })
 
-         
-          if (grandchildren[g].info) {
-            addInfoNode(grandchildren[g], this.grandnode)
+         // console.log("GRAND",g,grandchildren[g], this.grandnode)
+          if (grandprops.info != undefined) {
+         //   console.log("GRAND", grandprops.info)
+            if (getCount(grandprops.info)>1){ 
+             // console.log("grandnodes", grandchildren[g], this.grandnode)
+              addInfoNode(grandprops, this.grandnode)
+              
+            } 
+            
+
           }
 //console.log('grand', this.mynode, grandchildren[g].id, grandchildren[g].title, grandchildren[g].info)
 
@@ -2851,7 +2939,7 @@ function loadMindmap(target_div, mindmapData) {
 
   }
   function setItem(node){
-    console.log('set', current_slide_id,node)
+   // console.log('set', current_slide_id,node)
     if(node.backgroundImage != ''){
       jQuery('#screen-image-container').html('<img src="' + node.backgroundImage  + '">')
     }
@@ -2880,12 +2968,28 @@ function loadMindmap(target_div, mindmapData) {
     }
 
 
+
+  function getCount(data) {
+
+   var counter = 0;
+    for (var k in data) {
+     // console.log("k",k)
+      counter++;
+    }
+    return counter;
+  }
+
+
+
+
   function addInfoNode(data,this_node){
-        for (vari in data.info) {
+        for (var i in data.info) {
+          console.log("adinfonode",i,data.info[i])
           backgroundImage = ''//getInfoBG(i)
           this.infonode = jQuery(target_div).addNode(this_node, i, {
-            //          href:jQuery('a:eq(0)',this).text().toLowerCase(), href: "/",
-            size: "/",
+            //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
+            href: "/",
+            //size: "/",
             className: 'info-node',
             backgroundImage: backgroundImage,
             /// color: "green",
@@ -2930,59 +3034,6 @@ if (mindmapData.root.nodes.length >0){ // intializes nod build.
 
 }
 
-  /*
-  //ORIGINAL CODE that crawls list, to be disposed of
-  var root = (jQuery(target_div + '>ul>li').get(0).mynode = jQuery(
-    target_div
-  ).addRootNode(jQuery(target_div + '>ul>li>a').text(), {
-    href: '/',
-    url: '/',
-    size: jQuery(target_div + '>ul>li>a').attr('size'),
-    color: jQuery(target_div + '>ul>li>a').attr('color'),
-    onclick: function(node) {
-      jQuery(node.obj.activeNode.content).each(function() {
-        this.hide();
-      });
-    },
-  }));
-  
-  console.log('htmlroot', root);
-
-  jQuery(target_div + '>ul>li').hide();
-
-  var addLI = function() {
-    var parentnode = jQuery(this)
-      .parents('li')
-      .get(0);
-    if (typeof parentnode == 'undefined') parentnode = root;
-    else parentnode = parentnode.mynode;
-
-    this.mynode = jQuery(target_div).addNode(
-      parentnode,
-      jQuery('a:eq(0)', this).text(),
-      {
-        //          href:jQuery('a:eq(0)',this).text().toLowerCase(),
-        href: jQuery('a:eq(0)', this).attr('href'),
-        size: jQuery('a:eq(0)', this).attr('size'),
-        color: jQuery('a:eq(0)', this).attr('color'),
-        onclick: function(node) {
-          jQuery(node.obj.activeNode.content).each(function() {
-            this.hide();
-          });
-          jQuery(node.content).each(function() {
-            this.show();
-          });
-        },
-      }
-    );
-    jQuery(this).hide();
-    jQuery('>ul>li', this).each(addLI);
-  };
-
-  jQuery(target_div + '>ul>li>ul').each(function() {
-    jQuery('>li', this).each(addLI);
-  });
-  */
 //window.onload = init;
 //console.ward = function() {}; // what warnings?
 /*

@@ -281,6 +281,11 @@ function resourceInfo( $meta_boxes ) {
 				'name' => esc_html__( 'Facebook URL', 'metabox-online-generator' ),
 			),
 			array(
+				'id' => 'youtube',
+				'type' => 'url',
+				'name' => esc_html__( 'YouTube URL', 'metabox-online-generator' ),
+			),
+			array(
 				'id' => 'github',
 				'type' => 'url',
 				'name' => esc_html__( 'Github Repo URL', 'metabox-online-generator' ),
